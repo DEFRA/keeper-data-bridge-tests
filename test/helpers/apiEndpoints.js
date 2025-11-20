@@ -1,4 +1,3 @@
-import 'dotenv/config';
 
 export const keeperDataBridgeUrl = `https://ls-keeper-data-bridge-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud`;
 export const keeperDataAPIUrl = `https://ls-keeper-data-api.${process.env.ENVIRONMENT}.cdp-int.defra.cloud`;
