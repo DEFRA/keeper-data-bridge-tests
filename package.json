@@ -51,6 +51,7 @@
     "undici": "7.3.0"
   },
   "devDependencies": {
+    "allure-mocha": "3.4.2",
     "axios": "1.13.2",
     "chai": "6.2.1",
     "eslint": "^8.57.0",
