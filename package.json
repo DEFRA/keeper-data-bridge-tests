@@ -19,7 +19,7 @@
   },
   "scripts": {
     "clean": "rm -rf allure-results && rm -rf allure-report",
-    "test": "npm run clean && wdio run wdio.conf.js",
+    "test": "npm run clean && mocha $(find . -name '*.test.js') --reporter allure-mocha",
     "test:browserstack": "npm run clean && wdio run wdio.browserstack.conf.js",
     "test:local": "npm run clean && wdio run wdio.local.conf.js",
     "test:local:debug": "npm run clean && DEBUG=true wdio run wdio.local.conf.js",
