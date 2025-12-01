@@ -20,7 +20,14 @@ export function assertRowsMatch(expectedRows, actualRows, compositeKeyFields) {
       expectedRow,
       compositeKeyFields
     )
-    expect(match).to.exist
+    if(match === undefined) {
+      throw new Error(
+        `No matching row found for composite key: ${buildCompositeKey(
+          expectedRow,
+          compositeKeyFields
+        )}`
+      )
+    }
     for (const [key, expectedValue] of Object.entries(expectedRow)) {
       if (!key) continue
       expect(match).to.have.property(key)
