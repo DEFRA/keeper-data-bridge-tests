@@ -4,28 +4,41 @@ import {
   startImport as startImportApi,
   waitForImportCompletion as waitForImportCompletionApi,
   queryData,
-  getImportUsingImportId
+  getImportUsingImportId,
+  cleanCollection,
+  cleanInternalStorageFiles
 } from './apicall.js'
 import { expect } from 'chai'
 import { parsePipeCsvFile } from './csvUtils.js'
 import { assertRowsMatch } from './recordMatcher.js'
-import { TEST_KEEPER_DATA_BRIDGE_URL} from './apiEndpoints.js'
+import { TEST_KEEPER_DATA_BRIDGE_URL } from './apiEndpoints.js'
 
 // Resolve base URL from config or env
 const BASE_URL = TEST_KEEPER_DATA_BRIDGE_URL
 
-export async function performE2EFlow(fileName, collectionName, compositeKeyFields) {
-
-  // clean up existing collection and internal storage files before running the test
+export async function performE2EFlow(
+  fileName,
+  collectionName,
+  compositeKeyFields
+) {
+  // clean up existing collection and storage files before running the test
   // (to ensure a clean state for the E2E test)
-  // Note: Error handling is minimal here; in a real-world scenario, consider more robust error management    
-  await cleanCollection(BASE_URL, collectionName)
-  await cleanInternalStorageFiles(BASE_URL)
+  //await cleanCollection(BASE_URL, collectionName)
+  // await cleanInternalStorageFiles(BASE_URL, { SourceType: 'Internal' })
+  //await cleanInternalStorageFiles(BASE_URL, { SourceType: 'External' })
 
-    // Step 1: Upload the file
+  // Step 1: Upload the file
   const localFilePath = path.join('../data', fileName)
   console.log(`Uploading file from path: ${localFilePath}`)
-  const uploadResponse = await uploadEncryptedFile(BASE_URL, fileName, localFilePath)
+  console.log(`Using BASE_URL: ${BASE_URL}`)
+  console.log(`Using fileName: ${fileName}`)
+  console.log(`Using collectionName: ${collectionName}`)
+  console.log(`Using compositeKeyFields: ${compositeKeyFields.join(', ')}`)
+  const uploadResponse = await uploadEncryptedFile(
+    BASE_URL,
+    fileName,
+    localFilePath
+  )
   expect(uploadResponse.status).to.equal(200)
   console.log(`File ${fileName} uploaded successfully.`)
 

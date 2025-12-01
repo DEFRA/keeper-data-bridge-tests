@@ -5,16 +5,38 @@ import {
   QUERY_DATA_ENDPOINT,
   START_IMPORT_ENDPOINT,
   IMPORT_DATA_ENDPOINT,
-  UPLOAD_FILE_ENDPOINT
+  UPLOAD_FILE_ENDPOINT,
+  DELETE_COLLECTION_ENDPOINT,
+  DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
+  AUTHORIZATION_DEV_KEY,
+  AUTHORIZATION_TEST_KEY,
+  getEnvironment
 } from './apiEndpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
-import { start } from 'repl'
+
+// Authorization keys per environment
+const AUTH_KEYS = {
+  dev: AUTHORIZATION_DEV_KEY,
+  test: AUTHORIZATION_TEST_KEY
+}
+
+// Derive authorization key based on environment
+function getAuthorizationKey() {
+  console.log('Determining authorization key based on environment variables...')
+  const env = getEnvironment()
+  const key = AUTH_KEYS[env] || AUTH_KEYS.dev
+  console.log(`Using authorization key for environment: ${env}`)
+  return key
+}
+
+const AUTHORIZATION_KEY = getAuthorizationKey()
 
 export async function checkHealthEndPoint(url) {
   const apiHealthCheckResponse = await axios.get(url + HEALTH_ENDPOINT, {
     headers: {
-      'x-api-key': API_KEY
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     }
   })
   return apiHealthCheckResponse
@@ -26,8 +48,10 @@ export async function startImport(url) {
     null,
     {
       headers: {
-        'x-api-key': API_KEY
-      }
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      },
+      params: { sourceType: 'internal' }
     }
   )
   return startImportResponse
@@ -38,7 +62,8 @@ export async function getImportUsingImportId(url, importId) {
     `${url}${IMPORT_DATA_ENDPOINT}/${importId}`,
     {
       headers: {
-        'x-api-key': API_KEY
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
       }
     }
   )
@@ -54,9 +79,16 @@ export async function waitForImportCompletion(
   const startTime = Date.now()
   while (Date.now() - startTime < timeout) {
     const response = await getImportUsingImportId(url, importId)
-    if (response.data.status === 'Completed') {
+    const status = response.data.status
+
+    if (status === 'Completed') {
       return response
     }
+
+    if (status === 'Failed') {
+      throw new Error(`Import with ID ${importId} failed during processing.`)
+    }
+
     await new Promise((resolve) => setTimeout(resolve, interval))
   }
   throw new Error(
@@ -67,7 +99,8 @@ export async function waitForImportCompletion(
 export async function queryData(url, collectionName, queryParams) {
   const response = await axios.get(url + QUERY_DATA_ENDPOINT + collectionName, {
     headers: {
-      'x-api-key': API_KEY
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     },
     params: queryParams
   })
@@ -78,30 +111,53 @@ export async function uploadEncryptedFile(url, objectKey) {
   const fileFromPath = '../../data/' + objectKey
   const form = new FormData()
   form.append('File', fs.createReadStream(fileFromPath))
+  console.log(
+    `Uploading file: ${fileFromPath} to ${url + UPLOAD_FILE_ENDPOINT + `?objectKey=${objectKey}`}`
+  )
+  console.log(`objectKey: ${objectKey}`)
+  console.log(form.getHeaders())
   const response = await axios.post(url + UPLOAD_FILE_ENDPOINT, form, {
     headers: {
       'x-api-key': API_KEY,
-      'Content-Type': 'application/octet-stream'
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     },
     params: { objectKey: objectKey }
   })
+  console.log(`Upload response status: ${response.status}`)
+  console.log(`Upload response data: ${JSON.stringify(response.data)}`)
   return response
 }
 
 export async function cleanCollection(url, collectionName) {
-  const response = await axios.delete(url + DELETE_COLLECTION_ENDPOINT + collectionName, {
-    headers: {
-      'x-api-key': API_KEY
+  console.log(`Cleaning collection: ${collectionName}`)
+  console.log(`Using URL: ${url + DELETE_COLLECTION_ENDPOINT + collectionName}`)
+  console.log(`Using Authorization Key: ${AUTHORIZATION_KEY}`)
+  console.log(`Using API Key: ${API_KEY}`)
+  const response = await axios.delete(
+    url + DELETE_COLLECTION_ENDPOINT + collectionName,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      }
     }
-  })
+  )
   return response
 }
 
-export async function cleanInternalStorageFiles(url) {
-  const response = await axios.delete(url + DELETE_INTERNAL_STORAGE_FILES_ENDPOINT, {
-    headers: {
-      'x-api-key': API_KEY
+export async function cleanInternalStorageFiles(
+  url,
+  queryParams = { SourceType: 'Internal' }
+) {
+  const response = await axios.delete(
+    url + DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      },
+      params: queryParams
     }
-  })
+  )
   return response
 }
