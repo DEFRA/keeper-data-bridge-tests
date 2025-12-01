@@ -4,9 +4,7 @@ import {
   startImport as startImportApi,
   waitForImportCompletion as waitForImportCompletionApi,
   queryData,
-  getImportUsingImportId,
-  cleanCollection,
-  cleanInternalStorageFiles
+  getImportUsingImportId
 } from './apicall.js'
 import { expect } from 'chai'
 import { parsePipeCsvFile } from './csvUtils.js'
@@ -23,9 +21,9 @@ export async function performE2EFlow(
 ) {
   // clean up existing collection and storage files before running the test
   // (to ensure a clean state for the E2E test)
-  //await cleanCollection(BASE_URL, collectionName)
+  // await cleanCollection(BASE_URL, collectionName)
   // await cleanInternalStorageFiles(BASE_URL, { SourceType: 'Internal' })
-  //await cleanInternalStorageFiles(BASE_URL, { SourceType: 'External' })
+  // await cleanInternalStorageFiles(BASE_URL, { SourceType: 'External' })
 
   // Step 1: Upload the file
   const localFilePath = path.join('../data', fileName)
