@@ -23,7 +23,7 @@ export function assertRowsMatch(expectedRows, actualRows, compositeKeyFields) {
     expect(
       match,
       `No matching record found for expected row: ${JSON.stringify(expectedRow)}`
-    ).to.exist
+    ).to.not.be.undefined
     for (const [key, expectedValue] of Object.entries(expectedRow)) {
       if (!key) continue
       expect(match).to.have.property(key)
