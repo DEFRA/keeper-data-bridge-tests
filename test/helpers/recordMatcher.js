@@ -20,7 +20,7 @@ export function assertRowsMatch(expectedRows, actualRows, compositeKeyFields) {
       expectedRow,
       compositeKeyFields
     )
-    if(match === undefined) {
+    if (match === undefined) {
       throw new Error(
         `No matching row found for composite key: ${buildCompositeKey(
           expectedRow,
