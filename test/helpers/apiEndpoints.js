@@ -19,12 +19,11 @@ export const DELETE_INTERNAL_STORAGE_FILES_ENDPOINT =
 export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_EPHEMERAL_URL
 
 // Derive environment from environment variables
-export async function getEnvironment() {
+export function getEnvironment() {
   const env = (
     process.env.Environment !== undefined && process.env.Environment !== null
       ? process.env.Environment
       : 'dev'
   ).toLowerCase()
-  console.log(`Detected environment: ${env}`)
   return env
 }

@@ -29,34 +29,25 @@ export async function performE2EFlow(
 
   // Step 1: Upload the file
   const localFilePath = path.join('../data', fileName)
-  console.log(`Uploading file from path: ${localFilePath}`)
-  console.log(`Using BASE_URL: ${BASE_URL}`)
-  console.log(`Using fileName: ${fileName}`)
-  console.log(`Using collectionName: ${collectionName}`)
-  console.log(`Using compositeKeyFields: ${compositeKeyFields.join(', ')}`)
   const uploadResponse = await uploadEncryptedFile(
     BASE_URL,
     fileName,
     localFilePath
   )
   expect(uploadResponse.status).to.equal(200)
-  console.log(`File ${fileName} uploaded successfully.`)
 
   // Step 2: Start the import
   const response = await startImportApi(BASE_URL)
   expect(response.status).to.equal(202)
   const importId = response.data.importId
-  console.log(`Import started with ID: ${importId}`)
 
   // Step 3: Wait for import completion
   await waitForImportCompletionApi(BASE_URL, importId, 120000, 5000)
-  console.log(`Import with ID: ${importId} completed.`)
 
   // Step 4: Verify import status
   const importData = await getImportUsingImportId(BASE_URL, importId)
   expect(importData.status).to.equal(200)
   expect(importData.data.status).to.equal('Completed')
-  console.log(`Import status: ${importData.data.status}`)
 
   // Step 5: Query the data and perform assertions
   const queryParams = {
@@ -64,12 +55,10 @@ export async function performE2EFlow(
   }
   const queryResponse = await queryData(BASE_URL, collectionName, queryParams)
   expect(queryResponse.status).to.equal(200)
-  console.log('Query Response Data:', queryResponse.data)
 
   // --- use csvUtils and recordMatcher helpers ---
   const inFileName = fileName.replace(/\.csv$/i, '.in.csv')
   const inFilePath = path.join('../../data', inFileName)
-  console.log(`Reading expected data from: ${inFilePath}`)
   const expectedRows = await parsePipeCsvFile(inFilePath)
   const actualRows = queryResponse.data?.data || []
 

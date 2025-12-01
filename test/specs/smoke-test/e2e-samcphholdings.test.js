@@ -8,9 +8,6 @@ describe('E2E ETL Test', function () {
   before(async function () {
     const env = await getEnvironment()
     if (env !== 'dev') {
-      console.log(
-        `Skipping E2E SAM CPH Holdings Test - Environment is '${env}', not 'dev'`
-      )
       this.skip()
     }
   })

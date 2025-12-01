@@ -23,10 +23,8 @@ const AUTH_KEYS = {
 
 // Derive authorization key based on environment
 function getAuthorizationKey() {
-  console.log('Determining authorization key based on environment variables...')
   const env = getEnvironment()
   const key = AUTH_KEYS[env] || AUTH_KEYS.dev
-  console.log(`Using authorization key for environment: ${env}`)
   return key
 }
 
@@ -111,11 +109,6 @@ export async function uploadEncryptedFile(url, objectKey) {
   const fileFromPath = '../../data/' + objectKey
   const form = new FormData()
   form.append('File', fs.createReadStream(fileFromPath))
-  console.log(
-    `Uploading file: ${fileFromPath} to ${url + UPLOAD_FILE_ENDPOINT + `?objectKey=${objectKey}`}`
-  )
-  console.log(`objectKey: ${objectKey}`)
-  console.log(form.getHeaders())
   const response = await axios.post(url + UPLOAD_FILE_ENDPOINT, form, {
     headers: {
       'x-api-key': API_KEY,
@@ -123,16 +116,10 @@ export async function uploadEncryptedFile(url, objectKey) {
     },
     params: { objectKey: objectKey }
   })
-  console.log(`Upload response status: ${response.status}`)
-  console.log(`Upload response data: ${JSON.stringify(response.data)}`)
   return response
 }
 
 export async function cleanCollection(url, collectionName) {
-  console.log(`Cleaning collection: ${collectionName}`)
-  console.log(`Using URL: ${url + DELETE_COLLECTION_ENDPOINT + collectionName}`)
-  console.log(`Using Authorization Key: ${AUTHORIZATION_KEY}`)
-  console.log(`Using API Key: ${API_KEY}`)
   const response = await axios.delete(
     url + DELETE_COLLECTION_ENDPOINT + collectionName,
     {
