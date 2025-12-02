@@ -3,7 +3,7 @@ export const KEEPER_DATA_API_URL = `https://ls-keeper-data-api.${process.env.ENV
 export const KEEPER_DATA_BRIDGE_EPHEMERAL_URL = `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/ls-keeper-data-bridge-backend`
 export const KEEPER_DATA_API_EPHEMERAL_URL = `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/ls-keeper-data-api`
 export const KEEPER_DATA_BRIDGE_DEV_URL = `https://ls-keeper-data-bridge-backend.dev.cdp-int.defra.cloud`
-export const API_KEY = 'F5xpl5FOlALPeYH41Dsl1iQ8QIc7CkJe'
+export const API_KEY = 'e6WA7EN5zNSXLL3KRJnObDwiuZ1ZDfgQ'
 export const AUTHORIZATION_DEV_KEY =
   'cQG11tkBL8Xd9GTCkOjZn8-0ReAnw0cdfRDfuPr8E8nb9xdRJaKz8lEe5qUDYOP0'
 export const AUTHORIZATION_TEST_KEY =

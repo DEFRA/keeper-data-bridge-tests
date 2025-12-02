@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { buildCompositeKey } from './csvUtils.js'
+import { buildCompositeKey } from './csv-utils.js'
 
 export function findMatchByCompositeKey(
   actualRows,

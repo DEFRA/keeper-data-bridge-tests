@@ -5,11 +5,11 @@ import {
   waitForImportCompletion as waitForImportCompletionApi,
   queryData,
   getImportUsingImportId
-} from './apicall.js'
+} from './api-call.js'
 import { expect } from 'chai'
-import { parsePipeCsvFile } from './csvUtils.js'
-import { assertRowsMatch } from './recordMatcher.js'
-import { TEST_KEEPER_DATA_BRIDGE_URL } from './apiEndpoints.js'
+import { parsePipeCsvFile } from './csv-utils.js'
+import { assertRowsMatch } from './record-matcher.js'
+import { TEST_KEEPER_DATA_BRIDGE_URL } from './api-endpoints.js'
 
 // Resolve base URL from config or env
 const BASE_URL = TEST_KEEPER_DATA_BRIDGE_URL

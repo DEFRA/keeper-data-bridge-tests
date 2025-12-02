@@ -11,7 +11,7 @@ import {
   AUTHORIZATION_DEV_KEY,
   AUTHORIZATION_TEST_KEY,
   getEnvironment
-} from './apiEndpoints.js'
+} from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
 

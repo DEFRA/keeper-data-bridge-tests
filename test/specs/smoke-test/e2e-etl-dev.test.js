@@ -1,5 +1,5 @@
-import { getEnvironment } from '../../helpers/apiEndpoints.js'
-import { performE2EFlow } from '../../helpers/e2e-flow.js'
+import { getEnvironment } from '../../helpers/api-endpoints.js'
+import { performE2EFlow } from '../../helpers/e2e-etl-dev-flow.js'
 import { describe, it } from 'mocha'
 
 describe('E2E ETL Test', function () {
@@ -12,7 +12,7 @@ describe('E2E ETL Test', function () {
     }
   })
 
-  it('should perform a sample test for SAM CPH HOLDINGS', async () => {
+  it.only('should perform a sample test for SAM CPH HOLDINGS', async () => {
     const fileName = 'LITP_SAMCPHHOLDING_20251101000010.csv'
     const collectionName = 'sam_cph_holdings'
     const compositeKeyFields = [
