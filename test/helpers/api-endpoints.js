@@ -4,6 +4,7 @@ export const KEEPER_DATA_BRIDGE_EPHEMERAL_URL = `https://ephemeral-protected.api
 export const KEEPER_DATA_API_EPHEMERAL_URL = `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/ls-keeper-data-api`
 export const KEEPER_DATA_BRIDGE_DEV_URL = `https://ls-keeper-data-bridge-backend.dev.cdp-int.defra.cloud`
 export const API_KEY = 'e6WA7EN5zNSXLL3KRJnObDwiuZ1ZDfgQ'
+export const DEV_SALT_KEY = 'begoibNa99wwIYdFuPFt9rxpM5R45n'
 export const AUTHORIZATION_DEV_KEY =
   'cQG11tkBL8Xd9GTCkOjZn8-0ReAnw0cdfRDfuPr8E8nb9xdRJaKz8lEe5qUDYOP0'
 export const AUTHORIZATION_TEST_KEY =
@@ -17,6 +18,7 @@ export const DELETE_COLLECTION_ENDPOINT = '/api/Import/collections/'
 export const DELETE_INTERNAL_STORAGE_FILES_ENDPOINT =
   '/api/Import/internal-storage'
 export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_EPHEMERAL_URL
+export const DATA_FOLDER_PATH = '../../data/'
 
 // Derive environment from environment variables
 export function getEnvironment() {

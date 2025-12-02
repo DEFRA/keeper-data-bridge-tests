@@ -10,10 +10,12 @@ import {
   DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
   AUTHORIZATION_DEV_KEY,
   AUTHORIZATION_TEST_KEY,
-  getEnvironment
+  getEnvironment,
+  DATA_FOLDER_PATH
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
+import path from 'path'
 
 // Authorization keys per environment
 const AUTH_KEYS = {
@@ -106,7 +108,7 @@ export async function queryData(url, collectionName, queryParams) {
 }
 
 export async function uploadEncryptedFile(url, objectKey) {
-  const fileFromPath = '../../data/' + objectKey
+  const fileFromPath = path.join(DATA_FOLDER_PATH, 'encrypted', objectKey)
   const form = new FormData()
   form.append('File', fs.createReadStream(fileFromPath))
   const response = await axios.post(url + UPLOAD_FILE_ENDPOINT, form, {
@@ -114,7 +116,7 @@ export async function uploadEncryptedFile(url, objectKey) {
       'x-api-key': API_KEY,
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     },
-    params: { objectKey: objectKey }
+    params: { objectKey }
   })
   return response
 }
@@ -134,7 +136,7 @@ export async function cleanCollection(url, collectionName) {
 
 export async function cleanInternalStorageFiles(
   url,
-  queryParams = { SourceType: 'Internal' }
+  queryParams = { sourceType: 'internal' }
 ) {
   const response = await axios.delete(
     url + DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
