@@ -17,5 +17,5 @@ export const UPLOAD_FILE_ENDPOINT = '/api/ExternalCatalogue/upload'
 export const DELETE_COLLECTION_ENDPOINT = '/api/Import/collections/'
 export const DELETE_INTERNAL_STORAGE_FILES_ENDPOINT =
   '/api/Import/internal-storage'
-export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_EPHEMERAL_URL
+export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_DEV_URL
 export const DATA_FOLDER_PATH = '../data/'
