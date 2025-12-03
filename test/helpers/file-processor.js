@@ -7,8 +7,9 @@ class FileProcessor {
   constructor() {
     this.cryptoTransform = new AesCryptoTransform()
     this.rawFolderPath = path.join(DATA_FOLDER_PATH, 'raw')
-    this.dataFolderPath = path.join(DATA_FOLDER_PATH, 'encrypted')
     this.defaultSalt = DEV_SALT_KEY
+    // In-memory storage for processed files
+    this.processedFiles = new Map() // { filename: { encrypted: Buffer, unencrypted: Buffer } }
   }
 
   /**
@@ -41,18 +42,10 @@ class FileProcessor {
   }
 
   /**
-   * Clears all files in the encrypted/output folder
+   * Clears in-memory processed files
    */
-  clearEncryptedFolder() {
-    if (fs.existsSync(this.dataFolderPath)) {
-      const files = fs.readdirSync(this.dataFolderPath)
-      for (const file of files) {
-        const filePath = path.join(this.dataFolderPath, file)
-        if (fs.statSync(filePath).isFile()) {
-          fs.unlinkSync(filePath)
-        }
-      }
-    }
+  clearProcessedFiles() {
+    this.processedFiles.clear()
   }
 
   /**
@@ -63,12 +56,9 @@ class FileProcessor {
     if (!fs.existsSync(this.rawFolderPath)) {
       throw new Error(`Raw folder not found: ${this.rawFolderPath}`)
     }
-    if (!fs.existsSync(this.dataFolderPath)) {
-      fs.mkdirSync(this.dataFolderPath, { recursive: true })
-    }
 
-    // Clear encrypted folder before processing
-    this.clearEncryptedFolder()
+    // Clear in-memory storage before processing
+    this.clearProcessedFiles()
 
     // Read all CSV files from raw folder
     const files = fs
@@ -106,20 +96,20 @@ class FileProcessor {
 
     // Define paths
     const sourcePath = path.join(this.rawFolderPath, filename)
-    const inCsvPath = path.join(this.dataFolderPath, inCsvFilename)
-    const encryptedPath = path.join(this.dataFolderPath, encryptedFilename)
 
-    // Step 1: Copy to .in.csv (unencrypted reference copy)
-    fs.copyFileSync(sourcePath, inCsvPath)
+    // Step 1: Read source file into memory as unencrypted buffer
+    const unencryptedBuffer = fs.readFileSync(sourcePath)
 
-    // Step 2: Encrypt the file to .csv using filename as password
-    const password = encryptedFilename // Use output filename as password
-    await this.cryptoTransform.encryptFileAsync(
-      sourcePath,
-      encryptedPath,
-      password,
-      this.defaultSalt
-    )
+    // Step 2: Encrypt to buffer in memory
+    const password = encryptedFilename
+    const encryptedBuffer = await this.encryptBuffer(unencryptedBuffer, password)
+
+    // Store in memory
+    this.processedFiles.set(encryptedFilename, {
+      encrypted: encryptedBuffer,
+      unencrypted: unencryptedBuffer,
+      inCsvFilename
+    })
 
     return {
       sourceFile: filename,
@@ -129,6 +119,59 @@ class FileProcessor {
       password: encryptedFilename,
       success: true
     }
+  }
+
+  /**
+   * Encrypts a buffer using AES encryption
+   */
+  async encryptBuffer(inputBuffer, password) {
+    const { Readable, Writable } = await import('stream')
+    const chunks = []
+
+    return new Promise((resolve, reject) => {
+      const inputStream = Readable.from(inputBuffer)
+      const outputStream = new Writable({
+        write(chunk, encoding, callback) {
+          chunks.push(chunk)
+          callback()
+        }
+      })
+
+      outputStream.on('finish', () => resolve(Buffer.concat(chunks)))
+      outputStream.on('error', reject)
+
+      this.cryptoTransform.encryptStreamAsync(
+        inputStream,
+        outputStream,
+        password,
+        this.defaultSalt,
+        inputBuffer.length
+      ).then(() => outputStream.end()).catch(reject)
+    })
+  }
+
+  /**
+   * Gets encrypted file buffer from memory
+   */
+  getEncryptedFile(filename) {
+    const file = this.processedFiles.get(filename)
+    return file?.encrypted
+  }
+
+  /**
+   * Gets unencrypted file buffer from memory
+   */
+  getUnencryptedFile(filename) {
+    const file = this.processedFiles.get(filename)
+    return file?.unencrypted
+  }
+
+  /**
+   * Gets .in.csv filename for a given encrypted filename
+   */
+  getInCsvFilename(encryptedFilename) {
+    const file = this.processedFiles.get(encryptedFilename)
+    return file?.inCsvFilename
   }
 
   /**

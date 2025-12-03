@@ -1,11 +1,13 @@
 import { getEnvironment } from '../helpers/api-endpoints.js'
-import { performE2EFlow } from '../helpers/e2e-etl-dev-flow.js'
+import { performE2EFlow, setFileProcessor } from '../helpers/e2e-etl-dev-flow.js'
+import FileProcessor from '../helpers/file-processor.js'
 import { describe, it } from 'mocha'
-import { main as processFiles } from '../helpers/process-csv-files.js'
 import { expect } from 'chai'
 
 describe('E2E ETL Test', function () {
   this.timeout(180000)
+
+  let processor
 
   before(async function () {
     const env = await getEnvironment()
@@ -14,7 +16,9 @@ describe('E2E ETL Test', function () {
     }
 
     // Process and encrypt CSV files before running tests
-    await processFiles()
+    processor = new FileProcessor()
+    await processor.processAllFiles()
+    setFileProcessor(processor)
   })
 
   it('checks that the environment is set to dev', async function () {

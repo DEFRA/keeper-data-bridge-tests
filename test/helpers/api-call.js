@@ -107,16 +107,24 @@ export async function queryData(url, collectionName, queryParams) {
   return response
 }
 
-export async function uploadEncryptedFile(url, objectKey) {
-  const fileFromPath = path.join(DATA_FOLDER_PATH, 'encrypted', objectKey)
+export async function uploadEncryptedFile(url, objectKey, fileBuffer) {
   const form = new FormData()
-  form.append('File', fs.createReadStream(fileFromPath))
+
+  // Accept either Buffer or file path (for backwards compatibility)
+  if (Buffer.isBuffer(fileBuffer)) {
+    form.append('File', fileBuffer, objectKey)
+  } else {
+    // Legacy: file path provided
+    form.append('File', fs.createReadStream(fileBuffer))
+  }
+
   const response = await axios.post(url + UPLOAD_FILE_ENDPOINT, form, {
     headers: {
       'x-api-key': API_KEY,
-      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY,
+      ...form.getHeaders()
     },
-    params: { objectKey }
+    params: { objectKey: objectKey }
   })
   return response
 }
