@@ -16,7 +16,7 @@ describe('E2E ETL Test', function () {
     await processFiles()
   })
 
-  it.only('should perform a sample test for SAM CPH HOLDINGS', async () => {
+  it('should perform a sample test for SAM CPH HOLDINGS', async () => {
     const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
     const collectionName = 'sam_cph_holdings'
     const compositeKeyFields = [
