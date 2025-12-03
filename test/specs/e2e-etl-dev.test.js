@@ -26,8 +26,12 @@ describe('E2E ETL Test', function () {
   it('check that environment is dev', async function () {
     const env = await getEnvironment()
     expect(env).to.equal('dev')
-    expect(process.env.ENVIRONMENT).to.equal('dev')
   })
+
+   it('check that environment is dev2', async function () {
+    expect(process.env.Environment).to.equal('dev')
+  })
+  
 
   it('should perform a sample test for SAM CPH HOLDINGS', async () => {
     const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
