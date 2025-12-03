@@ -26,6 +26,7 @@ describe('E2E ETL Test', function () {
   it('check that environment is dev', async function () {
     const env = await getEnvironment()
     expect(env).to.equal('dev')
+    expect(process.env.ENVIRONMENT).to.equal('dev')
   })
 
   it('should perform a sample test for SAM CPH HOLDINGS', async () => {
