@@ -1,8 +1,6 @@
-import { getEnvironment } from '../helpers/api-endpoints.js'
 import { performE2EFlow, setFileProcessor } from '../helpers/e2e-etl-dev-flow.js'
 import FileProcessor from '../helpers/file-processor.js'
 import { describe, it } from 'mocha'
-import { expect } from 'chai'
 
 describe('E2E ETL Test', function () {
   this.timeout(180000)
@@ -14,7 +12,7 @@ describe('E2E ETL Test', function () {
       ? process.env.ENVIRONMENT
       : 'dev'
   ).toLowerCase()
-  
+
     if (env !== 'dev') {
       this.skip()
     }
