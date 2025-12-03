@@ -16,11 +16,11 @@ describe('E2E ETL Test', function () {
     // Process and encrypt CSV files before running tests
     await processFiles()
   })
-  
+
   it('checks that the environment is set to dev', async function () {
     const env = await getEnvironment()
     expect(env).to.equal('dev')
-  })  
+  })
 
   it('should perform a sample test for SAM CPH HOLDINGS', async () => {
     const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
