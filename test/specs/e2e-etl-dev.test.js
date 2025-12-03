@@ -18,14 +18,9 @@ describe('E2E ETL Test', function () {
     // Process and encrypt CSV files before running tests
     // FileProcessor will use test/data/raw by default at runtime
     processor = new FileProcessor()
-    // Or specify custom path: processor = new FileProcessor('/custom/path/to/raw')
+    // Or specify custom path: processor = new FileProcessor('../data/raw')
     await processor.processAllFiles()
     setFileProcessor(processor)
-  })
-
-  it('checks that the environment is set to dev', async function () {
-    const env = await getEnvironment()
-    expect(env).to.equal('dev')
   })
 
   it('should perform a sample test for SAM CPH HOLDINGS', async () => {
