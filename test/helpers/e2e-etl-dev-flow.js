@@ -1,5 +1,3 @@
-import path from 'path'
-import { Readable } from 'stream'
 import {
   uploadEncryptedFile,
   startImport as startImportApi,
@@ -10,7 +8,6 @@ import {
   cleanInternalStorageFiles
 } from './api-call.js'
 import { expect } from 'chai'
-import { parsePipeCsvFile } from './csv-utils.js'
 import { assertRowsMatch } from './record-matcher.js'
 import { TEST_KEEPER_DATA_BRIDGE_URL } from './api-endpoints.js'
 
@@ -97,7 +94,6 @@ export async function performE2EFlow(
   expect(queryResponse.status).to.equal(200)
 
   // --- use in-memory .in.csv file for validation ---
-  const inFileName = fileName.replace(/\.csv$/i, '.in.csv')
   const unencryptedBuffer = fileProcessor.getUnencryptedFile(fileName)
   if (!unencryptedBuffer) {
     throw new Error(`Unencrypted file not found in memory: ${fileName}`)

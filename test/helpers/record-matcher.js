@@ -1,5 +1,8 @@
 import { expect } from 'chai'
-import { buildCompositeKey } from './csv-utils.js'
+
+export function buildCompositeKey(obj, fields) {
+  return fields.map((f) => String(obj[f] || '')).join('|')
+}
 
 export function findMatchByCompositeKey(
   actualRows,
