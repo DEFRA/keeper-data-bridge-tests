@@ -19,13 +19,3 @@ export const DELETE_INTERNAL_STORAGE_FILES_ENDPOINT =
   '/api/Import/internal-storage'
 export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_DEV_URL
 export const DATA_FOLDER_PATH = '../data/'
-
-// Derive environment from environment variables
-export function getEnvironment() {
-  const env = (
-    process.env.Environment !== undefined && process.env.Environment !== null
-      ? process.env.Environment
-      : 'dev'
-  ).toLowerCase()
-  return env
-}

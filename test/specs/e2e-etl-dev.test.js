@@ -14,6 +14,7 @@ describe('E2E ETL Test', function () {
       ? process.env.ENVIRONMENT
       : 'dev'
   ).toLowerCase()
+  
     if (env !== 'dev') {
       this.skip()
     }
@@ -25,15 +26,6 @@ describe('E2E ETL Test', function () {
     await processor.processAllFiles()
     setFileProcessor(processor)
   })
-
-  it('check that environment is dev', async function () {
-    expect(env).to.equal('dev')
-  })
-
-   it('check that environment is dev2', async function () {
-    expect(process.env.ENVIRONMENT).to.equal('dev')
-  })
-  
 
   it('should perform a sample test for SAM CPH HOLDINGS', async () => {
     const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
