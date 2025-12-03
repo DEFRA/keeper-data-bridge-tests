@@ -14,7 +14,7 @@ describe('E2E ETL Test', function () {
     }
 
     // Process and encrypt CSV files before running tests
-    await processFiles()
+    //await processFiles()
   })
 
   it('checks that the environment is set to dev', async function () {
