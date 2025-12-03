@@ -1,7 +1,7 @@
-import { getEnvironment } from '../../helpers/api-endpoints.js'
-import { performE2EFlow } from '../../helpers/e2e-etl-dev-flow.js'
+import { getEnvironment } from '../helpers/api-endpoints.js'
+import { performE2EFlow } from '../helpers/e2e-etl-dev-flow.js'
 import { describe, it } from 'mocha'
-import { main as processFiles } from '../../helpers/process-csv-files.js'
+import { main as processFiles } from '../helpers/process-csv-files.js'
 import { expect } from 'chai'
 
 describe('E2E ETL Test', function () {
