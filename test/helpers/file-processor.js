@@ -4,9 +4,10 @@ import AesCryptoTransform from './aes-crypto-transform.js'
 import { DATA_FOLDER_PATH, DEV_SALT_KEY } from './api-endpoints.js'
 
 class FileProcessor {
-  constructor() {
+  constructor(rawFolderPath = null) {
     this.cryptoTransform = new AesCryptoTransform()
-    this.rawFolderPath = path.join(DATA_FOLDER_PATH, 'raw')
+    // Allow custom raw folder path or use default at runtime
+    this.rawFolderPath = rawFolderPath || path.join(process.cwd(), 'test', 'data', 'raw')
     this.defaultSalt = DEV_SALT_KEY
     // In-memory storage for processed files
     this.processedFiles = new Map() // { filename: { encrypted: Buffer, unencrypted: Buffer } }

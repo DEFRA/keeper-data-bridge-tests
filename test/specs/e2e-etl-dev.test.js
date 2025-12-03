@@ -16,7 +16,9 @@ describe('E2E ETL Test', function () {
     }
 
     // Process and encrypt CSV files before running tests
+    // FileProcessor will use test/data/raw by default at runtime
     processor = new FileProcessor()
+    // Or specify custom path: processor = new FileProcessor('/custom/path/to/raw')
     await processor.processAllFiles()
     setFileProcessor(processor)
   })
