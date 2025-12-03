@@ -9,9 +9,7 @@ import {
   DELETE_COLLECTION_ENDPOINT,
   DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
   AUTHORIZATION_DEV_KEY,
-  AUTHORIZATION_TEST_KEY,
-  getEnvironment,
-  DATA_FOLDER_PATH
+  AUTHORIZATION_TEST_KEY
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
@@ -25,7 +23,10 @@ const AUTH_KEYS = {
 
 // Derive authorization key based on environment
 function getAuthorizationKey() {
-  const env = getEnvironment()
+  const env = (process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+      ? process.env.ENVIRONMENT
+      : 'dev'
+  ).toLowerCase()
   const key = AUTH_KEYS[env] || AUTH_KEYS.dev
   return key
 }
