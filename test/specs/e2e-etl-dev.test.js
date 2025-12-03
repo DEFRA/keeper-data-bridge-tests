@@ -10,7 +10,10 @@ describe('E2E ETL Test', function () {
   let processor
 
   before(async function () {
-    const env = getEnvironment()
+    const env = (process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+      ? process.env.ENVIRONMENT
+      : 'dev'
+  ).toLowerCase()
     if (env !== 'dev') {
       this.skip()
     }
@@ -24,7 +27,6 @@ describe('E2E ETL Test', function () {
   })
 
   it('check that environment is dev', async function () {
-    const env = await getEnvironment()
     expect(env).to.equal('dev')
   })
 
