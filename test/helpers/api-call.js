@@ -159,3 +159,27 @@ export async function cleanInternalStorageFiles(
   )
   return response
 }
+
+export async function getCountriesList(url) {
+  const response = await axios.get(url + COUNTRY_LIST_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+    }
+  }
+)
+  return response
+}
+
+export async function getCountryDetailsById(url, countryId) {
+  const response = await axios.get(
+    `${url + COUNTRY_LIST_ENDPOINT}/${countryId}`,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      }
+    }
+  )
+  return response
+}
