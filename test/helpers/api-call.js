@@ -23,7 +23,8 @@ const AUTH_KEYS = {
 
 // Derive authorization key based on environment
 function getAuthorizationKey() {
-  const env = (process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+  const env = (
+    process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
       ? process.env.ENVIRONMENT
       : 'dev'
   ).toLowerCase()
@@ -167,8 +168,7 @@ export async function getCountriesList(url, queryParams = {}) {
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     },
     params: queryParams
-  }
-)
+  })
   return response
 }
 

@@ -21,7 +21,3 @@ export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_DEV_URL
 export const DATA_FOLDER_PATH = '../data/'
 export const COUNTRIES_LIST_ENDPOINT = '/api/Countries'
 export const PARTIES_LIST_ENDPOINT = '/api/Parties'
-
-
-
-

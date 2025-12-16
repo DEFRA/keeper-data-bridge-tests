@@ -1,4 +1,7 @@
-import { performE2EFlow, setFileProcessor } from '../helpers/e2e-etl-dev-flow.js'
+import {
+  performE2EFlow,
+  setFileProcessor
+} from '../helpers/e2e-etl-dev-flow.js'
 import FileProcessor from '../helpers/file-processor.js'
 import { describe, it } from 'mocha'
 
@@ -8,10 +11,11 @@ describe('E2E ETL Test', function () {
   let processor
 
   before(async function () {
-    const env = (process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
-      ? process.env.ENVIRONMENT
-      : 'dev'
-  ).toLowerCase()
+    const env = (
+      process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+        ? process.env.ENVIRONMENT
+        : 'dev'
+    ).toLowerCase()
 
     if (env !== 'dev') {
       this.skip()

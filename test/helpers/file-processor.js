@@ -7,7 +7,8 @@ class FileProcessor {
   constructor(rawFolderPath = null) {
     this.cryptoTransform = new AesCryptoTransform()
     // Allow custom raw folder path or use default at runtime
-    this.rawFolderPath = rawFolderPath || path.join(process.cwd(), 'test', 'data', 'raw')
+    this.rawFolderPath =
+      rawFolderPath || path.join(process.cwd(), 'test', 'data', 'raw')
     this.defaultSalt = DEV_SALT_KEY
     // In-memory storage for processed files
     this.processedFiles = new Map() // { filename: { encrypted: Buffer, unencrypted: Buffer } }
@@ -103,7 +104,10 @@ class FileProcessor {
 
     // Step 2: Encrypt to buffer in memory
     const password = encryptedFilename
-    const encryptedBuffer = await this.encryptBuffer(unencryptedBuffer, password)
+    const encryptedBuffer = await this.encryptBuffer(
+      unencryptedBuffer,
+      password
+    )
 
     // Store in memory
     this.processedFiles.set(encryptedFilename, {
@@ -141,13 +145,16 @@ class FileProcessor {
       outputStream.on('finish', () => resolve(Buffer.concat(chunks)))
       outputStream.on('error', reject)
 
-      this.cryptoTransform.encryptStreamAsync(
-        inputStream,
-        outputStream,
-        password,
-        this.defaultSalt,
-        inputBuffer.length
-      ).then(() => outputStream.end()).catch(reject)
+      this.cryptoTransform
+        .encryptStreamAsync(
+          inputStream,
+          outputStream,
+          password,
+          this.defaultSalt,
+          inputBuffer.length
+        )
+        .then(() => outputStream.end())
+        .catch(reject)
     })
   }
 
