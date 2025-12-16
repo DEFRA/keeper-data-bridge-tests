@@ -160,12 +160,13 @@ export async function cleanInternalStorageFiles(
   return response
 }
 
-export async function getCountriesList(url) {
-  const response = await axios.get(url + COUNTRY_LIST_ENDPOINT, {
+export async function getCountriesList(url, queryParams = {}) {
+  const response = await axios.get(url + COUNTRIES_LIST_ENDPOINT, {
     headers: {
       'x-api-key': API_KEY,
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY
-    }
+    },
+    params: queryParams
   }
 )
   return response
@@ -173,7 +174,31 @@ export async function getCountriesList(url) {
 
 export async function getCountryDetailsById(url, countryId) {
   const response = await axios.get(
-    `${url + COUNTRY_LIST_ENDPOINT}/${countryId}`,
+    `${url + COUNTRIES_LIST_ENDPOINT}/${countryId}`,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      }
+    }
+  )
+  return response
+}
+
+export async function getPartiesList(url, queryParams = {}) {
+  const response = await axios.get(url + PARTIES_LIST_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+    },
+    params: queryParams
+  })
+  return response
+}
+
+export async function getPartyDetailsById(url, partyId) {
+  const response = await axios.get(
+    `${url + PARTIES_LIST_ENDPOINT}/${partyId}`,
     {
       headers: {
         'x-api-key': API_KEY,
