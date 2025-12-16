@@ -9,11 +9,12 @@ import {
   DELETE_COLLECTION_ENDPOINT,
   DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
   AUTHORIZATION_DEV_KEY,
-  AUTHORIZATION_TEST_KEY
+  AUTHORIZATION_TEST_KEY,
+  COUNTRIES_LIST_ENDPOINT,
+  PARTIES_LIST_ENDPOINT
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
-import path from 'path'
 
 // Authorization keys per environment
 const AUTH_KEYS = {
@@ -126,7 +127,7 @@ export async function uploadEncryptedFile(url, objectKey, fileBuffer) {
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY,
       ...form.getHeaders()
     },
-    params: { objectKey: objectKey }
+    params: { objectKey }
   })
   return response
 }

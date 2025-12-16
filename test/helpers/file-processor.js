@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import AesCryptoTransform from './aes-crypto-transform.js'
-import { DATA_FOLDER_PATH, DEV_SALT_KEY } from './api-endpoints.js'
+import { DEV_SALT_KEY } from './api-endpoints.js'
 
 class FileProcessor {
   constructor(rawFolderPath = null) {
