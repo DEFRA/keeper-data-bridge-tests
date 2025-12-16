@@ -9,11 +9,12 @@ import {
   DELETE_COLLECTION_ENDPOINT,
   DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
   AUTHORIZATION_DEV_KEY,
-  AUTHORIZATION_TEST_KEY
+  AUTHORIZATION_TEST_KEY,
+  COUNTRIES_LIST_ENDPOINT,
+  PARTIES_LIST_ENDPOINT
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
-import path from 'path'
 
 // Authorization keys per environment
 const AUTH_KEYS = {
@@ -23,7 +24,8 @@ const AUTH_KEYS = {
 
 // Derive authorization key based on environment
 function getAuthorizationKey() {
-  const env = (process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+  const env = (
+    process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
       ? process.env.ENVIRONMENT
       : 'dev'
   ).toLowerCase()
@@ -125,7 +127,7 @@ export async function uploadEncryptedFile(url, objectKey, fileBuffer) {
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY,
       ...form.getHeaders()
     },
-    params: { objectKey: objectKey }
+    params: { objectKey }
   })
   return response
 }
@@ -167,8 +169,7 @@ export async function getCountriesList(url, queryParams = {}) {
       Authorization: 'ApiKey ' + AUTHORIZATION_KEY
     },
     params: queryParams
-  }
-)
+  })
   return response
 }
 
