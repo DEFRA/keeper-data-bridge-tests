@@ -19,5 +19,8 @@ export const DELETE_INTERNAL_STORAGE_FILES_ENDPOINT =
   '/api/Import/internal-storage'
 export const TEST_KEEPER_DATA_BRIDGE_URL = KEEPER_DATA_BRIDGE_DEV_URL
 export const DATA_FOLDER_PATH = '../data/'
-export const COUNTRIES_LIST_ENDPOINT = '/api/Countries'
-export const PARTIES_LIST_ENDPOINT = '/api/Parties'
+export const COUNTRIES_LIST_ENDPOINT = '/api/countries'
+export const PARTIES_LIST_ENDPOINT = '/api/parties'
+export const SITES_LIST_ENDPOINT = '/api/sites'
+export const CTS_DAILY_SCAN_ENDPOINT = '/api/import/CtsDailyScan'
+export const SAM_DAILY_SCAN_ENDPOINT = '/api/import/SamDailyScan'
