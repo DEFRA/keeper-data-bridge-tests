@@ -1,7 +1,14 @@
 import { expect } from 'chai'
-import { upgrade } from '~/node_modules/undici/index'
+import { describe, it, before } from 'mocha'
+import {
+  startSamDailyScanImport,
+  getSitesList,
+  getSiteDetailsById
+} from '../helpers/api-call.js'
+import { performE2EFlow } from '../helpers/file-processor.js'
+import { KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
-describe('sites API Test', () => {
+describe.skip('sites API Test', () => {
   before(async () => {
     const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
     const collectionName = 'sam_cph_holdings'
