@@ -9,10 +9,10 @@ import {
 } from './api-call.js'
 import { expect } from 'chai'
 import { assertRowsMatch } from './record-matcher.js'
-import { TEST_KEEPER_DATA_BRIDGE_URL } from './api-endpoints.js'
+import { KEEPER_DATA_BRIDGE_DEV_URL } from './api-endpoints.js'
 
 // Resolve base URL from config or env
-const BASE_URL = TEST_KEEPER_DATA_BRIDGE_URL
+const BASE_URL = KEEPER_DATA_BRIDGE_DEV_URL
 
 // Store reference to file processor
 let fileProcessor = null
