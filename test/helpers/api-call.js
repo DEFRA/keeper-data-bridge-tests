@@ -11,7 +11,8 @@ import {
   AUTHORIZATION_DEV_KEY,
   AUTHORIZATION_TEST_KEY,
   COUNTRIES_LIST_ENDPOINT,
-  PARTIES_LIST_ENDPOINT
+  PARTIES_LIST_ENDPOINT,
+  SITES_LIST_ENDPOINT
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
