@@ -3,7 +3,7 @@ import {
   startSamDailyScanImport,
   getPartiesList,
   getPartyDetailsById
-} from '../helpers/api-call'
+} from '../helpers/api-call.js'
 import { performE2EFlow } from '../helpers/e2e-etl-dev-flow.js'
 import { expect } from 'chai'
 import { KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
