@@ -209,3 +209,24 @@ export async function getPartyDetailsById(url, partyId) {
   )
   return response
 }
+
+export async function getSitesList(url, queryParams = {}) {
+  const response = await axios.get(url + SITES_LIST_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+    },
+    params: queryParams
+  })
+  return response
+}
+
+export async function getSiteDetailsById(url, siteId) {
+  const response = await axios.get(`${url + SITES_LIST_ENDPOINT}/${siteId}`, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+    }
+  })
+  return response
+}
