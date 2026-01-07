@@ -12,7 +12,9 @@ import {
   AUTHORIZATION_TEST_KEY,
   COUNTRIES_LIST_ENDPOINT,
   PARTIES_LIST_ENDPOINT,
-  SITES_LIST_ENDPOINT
+  SITES_LIST_ENDPOINT,
+  CTS_DAILY_SCAN_ENDPOINT,
+  SAM_DAILY_SCAN_ENDPOINT
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
@@ -230,4 +232,33 @@ export async function getSiteDetailsById(url, siteId) {
     }
   })
   return response
+}
+export async function startCtsDailyScanImport(url) {
+  const startImportResponse = await axios.post(
+    url + CTS_DAILY_SCAN_ENDPOINT,
+    null,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      },
+      params: { sourceType: 'CtsDailyScan' }
+    }
+  )
+  return startImportResponse
+}
+
+export async function startSamDailyScanImport(url) {
+  const startImportResponse = await axios.post(
+    url + SAM_DAILY_SCAN_ENDPOINT,
+    null,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      },
+      params: { sourceType: 'SamDailyScan' }
+    }
+  )
+  return startImportResponse
 }
