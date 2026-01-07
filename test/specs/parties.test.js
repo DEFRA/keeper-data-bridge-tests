@@ -4,7 +4,7 @@ import {
   getPartiesList,
   getPartyDetailsById
 } from '../helpers/api-call'
-import { performE2EFlow } from '../helpers/file-processor.js'
+import { performE2EFlow } from '../helpers/e2e-etl-dev-flow.js'
 import { expect } from 'chai'
 import { KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
