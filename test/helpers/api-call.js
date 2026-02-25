@@ -10,6 +10,8 @@ import {
   DELETE_INTERNAL_STORAGE_FILES_ENDPOINT,
   AUTHORIZATION_DEV_KEY,
   AUTHORIZATION_TEST_KEY,
+  AUTHORIZATION_DEV_KEY_API,
+  AUTHORIZATION_TEST_KEY_API,
   COUNTRIES_LIST_ENDPOINT,
   PARTIES_LIST_ENDPOINT,
   SITES_LIST_ENDPOINT,
@@ -25,6 +27,11 @@ const AUTH_KEYS = {
   test: AUTHORIZATION_TEST_KEY
 }
 
+const AUTH_KEYS_API = {
+  dev: AUTHORIZATION_DEV_KEY_API,
+  test: AUTHORIZATION_TEST_KEY_API
+}
+
 // Derive authorization key based on environment
 function getAuthorizationKey() {
   const env = (
@@ -33,6 +40,16 @@ function getAuthorizationKey() {
       : 'dev'
   ).toLowerCase()
   const key = AUTH_KEYS[env] || AUTH_KEYS.dev
+  return key
+}
+
+function getAuthorizationKeyApi() {
+  const env = (
+    process.env.ENVIRONMENT !== undefined && process.env.ENVIRONMENT !== null
+      ? process.env.ENVIRONMENT
+      : 'dev'
+  ).toLowerCase()
+  const key = AUTH_KEYS_API[env] || AUTH_KEYS_API.dev
   return key
 }
 
@@ -169,7 +186,7 @@ export async function getCountriesList(url, queryParams = {}) {
   const response = await axios.get(url + COUNTRIES_LIST_ENDPOINT, {
     headers: {
       'x-api-key': API_KEY,
-      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      Authorization: 'Basic ' + getAuthorizationKeyApi()
     },
     params: queryParams
   })
@@ -182,7 +199,7 @@ export async function getCountryDetailsById(url, countryId) {
     {
       headers: {
         'x-api-key': API_KEY,
-        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+        Authorization: 'Basic ' + getAuthorizationKeyApi()
       }
     }
   )
@@ -193,7 +210,7 @@ export async function getPartiesList(url, queryParams = {}) {
   const response = await axios.get(url + PARTIES_LIST_ENDPOINT, {
     headers: {
       'x-api-key': API_KEY,
-      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      Authorization: 'Basic ' + getAuthorizationKeyApi()
     },
     params: queryParams
   })
@@ -206,7 +223,7 @@ export async function getPartyDetailsById(url, partyId) {
     {
       headers: {
         'x-api-key': API_KEY,
-        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+        Authorization: 'Basic ' + getAuthorizationKeyApi()
       }
     }
   )
@@ -217,7 +234,7 @@ export async function getSitesList(url, queryParams = {}) {
   const response = await axios.get(url + SITES_LIST_ENDPOINT, {
     headers: {
       'x-api-key': API_KEY,
-      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      Authorization: 'Basic ' + getAuthorizationKeyApi()
     },
     params: queryParams
   })
@@ -228,7 +245,7 @@ export async function getSiteDetailsById(url, siteId) {
   const response = await axios.get(`${url + SITES_LIST_ENDPOINT}/${siteId}`, {
     headers: {
       'x-api-key': API_KEY,
-      Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+      Authorization: 'Basic ' + getAuthorizationKeyApi()
     }
   })
   return response
@@ -240,7 +257,7 @@ export async function startCtsDailyScanImport(url) {
     {
       headers: {
         'x-api-key': API_KEY,
-        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+        Authorization: 'Basic ' + getAuthorizationKeyApi()
       },
       params: { sourceType: 'CtsDailyScan' }
     }
@@ -255,7 +272,7 @@ export async function startSamDailyScanImport(url) {
     {
       headers: {
         'x-api-key': API_KEY,
-        Authorization: 'ApiKey ' + AUTHORIZATION_KEY
+        Authorization: 'Basic ' + getAuthorizationKeyApi()
       },
       params: { sourceType: 'SamDailyScan' }
     }
