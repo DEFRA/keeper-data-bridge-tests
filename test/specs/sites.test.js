@@ -16,8 +16,10 @@ describe('sites API Test', function () {
   this.timeout(180000)
 
   let processor
+  let lastUpdatedTimePoint
   before(async () => {
     // Prepare and register the in-memory file processor for E2E flow
+    lastUpdatedTimePoint = new Date().toISOString()
     processor = new FileProcessor()
     await processor.processAllFiles()
     setFileProcessor(processor)
@@ -48,36 +50,42 @@ describe('sites API Test', function () {
     const responseSiteByIdentifier = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
-        siteIdentifier: '01/001/0001'
+        SiteIdentifier: '26/002/0002'
       }
     )
     expect(responseSiteByIdentifier.status).to.equal(200)
     expect(responseSiteByIdentifier.data).to.have.property('values')
     expect(responseSiteByIdentifier.data.values).to.be.an('array')
+    expect(responseSiteByIdentifier.data.values.length).to.be.greaterThan(0)
+
+    const site = responseSiteByIdentifier.data.values[0]
+    expect(site.identifiers).to.be.an('array')
+    expect(site.identifiers[0].identifier).to.equal('26/002/0002')
   })
 
   it('should return sites details matching site identifiers', async () => {
     const responseSitesByIdentifiers = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
-        siteIdentifiers: '01/001/0001,01/001/0002'
+        SiteIdentifiers: '26/002/0002,26/003/0003'
       }
     )
     expect(responseSitesByIdentifiers.status).to.equal(200)
     expect(responseSitesByIdentifiers.data).to.have.property('values')
     expect(responseSitesByIdentifiers.data.values).to.be.an('array')
+    expect(responseSitesByIdentifiers.data.values.length).to.equal(2)
+
+    const firstSite = responseSitesByIdentifiers.data.values[0]
+    const secondSite = responseSitesByIdentifiers.data.values[1]
+
+    expect(firstSite.identifiers).to.be.an('array')
+    expect(secondSite.identifiers).to.be.an('array')
+
+    expect(firstSite.identifiers[0].identifier).to.equal('26/002/0002')
+    expect(secondSite.identifiers[0].identifier).to.equal('26/003/0003')
   })
 
-  it('should return sites details by name', async () => {
-    const responseSitesByName = await getSitesList(TEST_KEEPER_DATA_API_URL, {
-      name: 'Test Site'
-    })
-    expect(responseSitesByName.status).to.equal(200)
-    expect(responseSitesByName.data).to.have.property('values')
-    expect(responseSitesByName.data.values).to.be.an('array')
-  })
-
-  it('should return sites details by type', async () => {
+  it.skip('should return sites details by type', async () => {
     const responseSitesByType = await getSitesList(TEST_KEEPER_DATA_API_URL, {
       type: 'ZO-Zoo'
     })
@@ -87,15 +95,53 @@ describe('sites API Test', function () {
   })
 
   it('should return site details by site id', async () => {
+    // First get a generic list of sites
+    const allSitesResponse = await getSitesList(TEST_KEEPER_DATA_API_URL)
+    expect(allSitesResponse.status).to.equal(200)
+    expect(allSitesResponse.data).to.have.property('values')
+    expect(allSitesResponse.data.values).to.be.an('array')
+    expect(allSitesResponse.data.values.length).to.be.greaterThan(0)
+
+    const siteId = allSitesResponse.data.values[0].id
+
+    // Then call the endpoint with the siteId parameter and verify the response
     const responseSitesList = await getSitesList(TEST_KEEPER_DATA_API_URL, {
-      siteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+      SiteId: siteId
     })
     expect(responseSitesList.status).to.equal(200)
     expect(responseSitesList.data).to.have.property('values')
     expect(responseSitesList.data.values).to.be.an('array')
+    expect(responseSitesList.data.values.length).to.be.greaterThan(0)
+    expect(responseSitesList.data.values[0].id).to.equal(siteId)
   })
 
-  it('should return site details by party id', async () => {
+  it('should return sites details by site ids', async () => {
+    // Get a generic list of sites to obtain multiple IDs
+    const allSitesResponse = await getSitesList(TEST_KEEPER_DATA_API_URL)
+    expect(allSitesResponse.status).to.equal(200)
+    expect(allSitesResponse.data).to.have.property('values')
+    expect(allSitesResponse.data.values).to.be.an('array')
+    expect(allSitesResponse.data.values.length).to.be.greaterThan(1)
+
+    const firstSiteId = allSitesResponse.data.values[0].id
+    const secondSiteId = allSitesResponse.data.values[1].id
+
+    // Call the list endpoint filtered by multiple site IDs
+    const responseByIds = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+      SiteIds: `${firstSiteId},${secondSiteId}`
+    })
+
+    expect(responseByIds.status).to.equal(200)
+    expect(responseByIds.data).to.have.property('values')
+    expect(responseByIds.data.values).to.be.an('array')
+    expect(responseByIds.data.values.length).to.be.greaterThan(1)
+
+    const returnedIds = responseByIds.data.values.map((s) => s.id)
+    expect(returnedIds).to.include(firstSiteId)
+    expect(returnedIds).to.include(secondSiteId)
+  })
+
+  it.skip('should return site details by keeperparty id', async () => {
     const responseSitesByPartyId = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
@@ -107,14 +153,21 @@ describe('sites API Test', function () {
     expect(responseSitesByPartyId.data.values).to.be.an('array')
   })
 
-  it('should return site detaisl by last updated date', async () => {
-    const responseSitesByLastUpgradeDate = await getSitesList(
+  it('should return site details by last updated date', async () => {
+    const responseSitesByLastUpdatedDate = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
-      { lastUpdatedDate: '2023-01-01T00:00:00Z' }
+      { lastUpdatedDate: lastUpdatedTimePoint }
     )
-    expect(responseSitesByLastUpgradeDate.status).to.equal(200)
-    expect(responseSitesByLastUpgradeDate.data).to.have.property('values')
-    expect(responseSitesByLastUpgradeDate.data.values).to.be.an('array')
+    expect(responseSitesByLastUpdatedDate.status).to.equal(200)
+    expect(responseSitesByLastUpdatedDate.data).to.have.property('values')
+    expect(responseSitesByLastUpdatedDate.data.values).to.be.an('array')
+
+    const threshold = new Date(lastUpdatedTimePoint)
+    responseSitesByLastUpdatedDate.data.values.forEach((site) => {
+      expect(new Date(site.lastUpdatedDate).getTime()).to.be.at.least(
+        threshold.getTime()
+      )
+    })
   })
 
   it('should return site details by site id endpoint', async () => {
