@@ -50,7 +50,7 @@ describe('sites API Test', function () {
     const responseSiteByIdentifier = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
-        SiteIdentifier: '26/002/0002'
+        SiteIdentifier: '37/002/0002'
       }
     )
     expect(responseSiteByIdentifier.status).to.equal(200)
@@ -60,14 +60,14 @@ describe('sites API Test', function () {
 
     const site = responseSiteByIdentifier.data.values[0]
     expect(site.identifiers).to.be.an('array')
-    expect(site.identifiers[0].identifier).to.equal('26/002/0002')
+    expect(site.identifiers[0].identifier).to.equal('37/002/0002')
   })
 
   it('should return sites details matching site identifiers', async () => {
     const responseSitesByIdentifiers = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
-        SiteIdentifiers: '26/002/0002,26/003/0003'
+        SiteIdentifiers: '37/002/0002,37/003/0003'
       }
     )
     expect(responseSitesByIdentifiers.status).to.equal(200)
@@ -81,8 +81,8 @@ describe('sites API Test', function () {
     expect(firstSite.identifiers).to.be.an('array')
     expect(secondSite.identifiers).to.be.an('array')
 
-    expect(firstSite.identifiers[0].identifier).to.equal('26/002/0002')
-    expect(secondSite.identifiers[0].identifier).to.equal('26/003/0003')
+    expect(firstSite.identifiers[0].identifier).to.equal('37/002/0002')
+    expect(secondSite.identifiers[0].identifier).to.equal('37/003/0003')
   })
 
   it.skip('should return sites details by type', async () => {
@@ -141,11 +141,21 @@ describe('sites API Test', function () {
     expect(returnedIds).to.include(secondSiteId)
   })
 
-  it.skip('should return site details by keeperparty id', async () => {
+  it('should return site details by keeperparty id', async () => {
+    // First get a generic list of sites to obtain a real party id
+    const allSitesResponse = await getSitesList(TEST_KEEPER_DATA_API_URL)
+    expect(allSitesResponse.status).to.equal(200)
+    expect(allSitesResponse.data).to.have.property('values')
+    expect(allSitesResponse.data.values).to.be.an('array')
+    expect(allSitesResponse.data.values.length).to.be.greaterThan(0)
+
+    const partyId = allSitesResponse.data.values[0].partyId
+
+    // Then query again filtered by that party id (assuming the test data has sites linked to parties)
     const responseSitesByPartyId = await getSitesList(
       TEST_KEEPER_DATA_API_URL,
       {
-        partyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        partyId
       }
     )
     expect(responseSitesByPartyId.status).to.equal(200)
