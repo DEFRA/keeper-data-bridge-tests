@@ -122,6 +122,13 @@ describe('Cleanse Report API Test', function () {
     expect(cleanseIssuesResponse).to.not.equal(undefined)
     expect(cleanseIssuesResponse.data).to.have.property('count')
     expect(cleanseIssuesResponse.data.count).to.be.greaterThan(0)
+    cleanseIssuesResponse.data.issues.forEach((issue) => {
+      expect(issue).to.have.property('cph')
+      if (issue.cph) {
+        const cphValue = parseInt(issue.cph.split('/')[0])
+        expect(cphValue).to.be.within(1, 51)
+      }
+    })
   })
 
   // Rule 1
@@ -236,6 +243,17 @@ describe('Cleanse Report API Test', function () {
         'SAM is missing email addresses found in CTS'
       )
       expect(issue.emailSAM).to.be.not.equal(issue.emailCTS)
+      // at least one CTS email should be missing in SAM for the issue to be CTS_SAM_INCONSIS_EMAILS
+      const samEmails = Array.isArray(issue.emailSAM)
+        ? issue.emailSAM.map((email) => email.toLowerCase())
+        : []
+      const ctsEmails = Array.isArray(issue.emailCTS)
+        ? issue.emailCTS.map((email) => email.toLowerCase())
+        : []
+      const hasMissingInSam = ctsEmails.some(
+        (ctsEmail) => !samEmails.includes(ctsEmail)
+      )
+      expect(hasMissingInSam).to.equal(true)
     })
   })
 
@@ -253,6 +271,17 @@ describe('Cleanse Report API Test', function () {
         'SAM is missing phone numbers found in CTS'
       )
       expect(issue.telSAM).to.be.not.equal(issue.telCTS)
+      // at least one CTS phone number should be missing in SAM for the issue to be CTS_SAM_INCONSIS_PHONENOS
+      const samPhones = Array.isArray(issue.telSAM)
+        ? issue.telSAM.map((phone) => phone.toLowerCase())
+        : []
+      const ctsPhones = Array.isArray(issue.telCTS)
+        ? issue.telCTS.map((phone) => phone.toLowerCase())
+        : []
+      const hasMissingInSam = ctsPhones.some(
+        (ctsPhone) => !samPhones.includes(ctsPhone)
+      )
+      expect(hasMissingInSam).to.equal(true)
     })
   })
 
