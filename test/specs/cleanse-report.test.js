@@ -173,7 +173,7 @@ describe('Cleanse Report API Test', function () {
       expect(issue.ctsLidFullIdentifier).to.equal('')
       expect(issue.issueCode).to.equal('SAM_CPH_NOT_IN_CTS')
       expect(issue.ruleCode).to.equal('2B')
-      expect(issue.errorCode).to.equal('2B')
+      expect(issue.errorCode).to.equal('02B')
     })
   })
 
@@ -222,7 +222,7 @@ describe('Cleanse Report API Test', function () {
       expect(issue.ruleCode).to.equal('5')
       expect(issue.errorCode).to.equal('05')
       expect(issue.errorDescription).to.equal(
-        'No telephone numbers in CTS or Sam'
+        'No telephone numbers in CTS and Sam'
       )
       expect(issue.telCTS).to.equal(null)
       expect(issue.telSAM).to.equal(null)
