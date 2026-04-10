@@ -15,6 +15,8 @@ import {
   COUNTRIES_LIST_ENDPOINT,
   PARTIES_LIST_ENDPOINT,
   SITES_LIST_ENDPOINT,
+  SPECIES_LIST_ENDPOINT,
+  SITE_TYPES_ENDPOINT,
   CTS_DAILY_SCAN_ENDPOINT,
   SAM_DAILY_SCAN_ENDPOINT,
   CLEANSE_START_ANALYSIS_ENDPOINT,
@@ -244,6 +246,40 @@ export async function getSitesList(url, queryParams = {}) {
       Authorization: 'Basic ' + AUTHORIZATION_KEY_API
     },
     params: queryParams
+  })
+  return response
+}
+
+export async function getSpeciesList(url, queryParams = {}) {
+  const response = await axios.get(url + SPECIES_LIST_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+    },
+    params: queryParams
+  })
+  return response
+}
+
+export async function getSpeciesDetailsById(url, speciesId) {
+  const response = await axios.get(
+    `${url + SPECIES_LIST_ENDPOINT}/${speciesId}`,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+      }
+    }
+  )
+  return response
+}
+
+export async function getSiteTypes(url) {
+  const response = await axios.get(url + SITE_TYPES_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+    }
   })
   return response
 }

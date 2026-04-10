@@ -4,7 +4,7 @@ export const KEEPER_DATA_BRIDGE_EPHEMERAL_URL = `https://ephemeral-protected.api
 export const KEEPER_DATA_API_EPHEMERAL_URL = `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/ls-keeper-data-api`
 export const KEEPER_DATA_BRIDGE_DEV_URL = `https://ls-keeper-data-bridge-backend.dev.cdp-int.defra.cloud`
 export const KEEPER_DATA_API_DEV_URL = `https://ls-keeper-data-api.dev.cdp-int.defra.cloud`
-export const API_KEY = 'EHS8qj6ke122gOTAVO2x3w9xgQd95liU'
+export const API_KEY = 'cQk6m95I4PkwBBGlEOWdnsbTzvuSZOXS'
 export const DEV_SALT_KEY = 'begoibNa99wwIYdFuPFt9rxpM5R45n'
 export const AUTHORIZATION_DEV_KEY =
   'cQG11tkBL8Xd9GTCkOjZn8-0ReAnw0cdfRDfuPr8E8nb9xdRJaKz8lEe5qUDYOP0'
@@ -28,6 +28,8 @@ export const DATA_FOLDER_PATH = '../data/'
 export const COUNTRIES_LIST_ENDPOINT = '/api/countries'
 export const PARTIES_LIST_ENDPOINT = '/api/parties'
 export const SITES_LIST_ENDPOINT = '/api/sites'
+export const SPECIES_LIST_ENDPOINT = '/api/species'
+export const SITE_TYPES_ENDPOINT = '/api/sitetypes'
 export const CTS_DAILY_SCAN_ENDPOINT = '/api/import/startCtsScan'
 export const SAM_DAILY_SCAN_ENDPOINT = '/api/import/startSamScan'
 export const CLEANSE_START_ANALYSIS_ENDPOINT = '/api/Cleanse/start-analysis'
