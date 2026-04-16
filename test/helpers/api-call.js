@@ -24,7 +24,8 @@ import {
   CLEANSE_DELETE_METADATA_ENDPOINT,
   CLEANSE_RUNS_ENDPOINT,
   CLEANSE_RUN_ENDPOINT,
-  CLEANSE_ISSUES_ENDPOINT
+  CLEANSE_ISSUES_ENDPOINT,
+  IDENTIFIER_TYPES_ENDPOINT
 } from './api-endpoints.js'
 import FormData from 'form-data'
 import fs from 'fs'
@@ -264,6 +265,30 @@ export async function getSpeciesList(url, queryParams = {}) {
 export async function getSpeciesDetailsById(url, speciesId) {
   const response = await axios.get(
     `${url + SPECIES_LIST_ENDPOINT}/${speciesId}`,
+    {
+      headers: {
+        'x-api-key': API_KEY,
+        Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+      }
+    }
+  )
+  return response
+}
+
+export async function getIdentifierTypesList(url, queryParams = {}) {
+  const response = await axios.get(url + IDENTIFIER_TYPES_ENDPOINT, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+    },
+    params: queryParams
+  })
+  return response
+}
+
+export async function getIdentifierTypeById(url, identifierTypeId) {
+  const response = await axios.get(
+    `${url + IDENTIFIER_TYPES_ENDPOINT}/${identifierTypeId}`,
     {
       headers: {
         'x-api-key': API_KEY,
