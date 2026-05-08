@@ -1,4 +1,3 @@
-import { describe, it, before } from 'mocha'
 import {
   startSamDailyScanImport,
   getPartiesList,

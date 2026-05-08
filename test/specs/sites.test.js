@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { describe, it, before } from 'mocha'
 import {
   startSamDailyScanImport,
   getSitesList,
@@ -207,5 +206,44 @@ describe('sites API Test', function () {
     } catch (error) {
       expect(error.response.status).to.equal(400)
     }
+  })
+
+  it('should return site relationship data when retrieving sites', async () => {
+    // site seeded in DB
+    const siteIdentifier = '37/002/0002'
+    const secondaryCPH = '37/002/5002'
+    const cphType = 'MAIN'
+
+    const siteResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+      SiteIdentifier: siteIdentifier
+    })
+    expect(siteResponse.status).to.equal(200)
+    expect(siteResponse.data.values[0].parentSiteIdentifier).to.equal(
+      secondaryCPH
+    )
+    expect(siteResponse.data.values[0].holdingType).to.equal(cphType)
+  })
+
+  it('should return site site relationship data when retrieving site by id', async () => {
+    // site seeded in DB
+    const siteIdentifier = '37/002/0002'
+    const secondaryCPH = '37/002/5002'
+    const cphType = 'MAIN'
+
+    // find site via sites endpoint to get siteId
+    const sitesResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+      SiteIdentifier: siteIdentifier
+    })
+
+    expect(sitesResponse.status).to.equal(200)
+    const siteId = sitesResponse.data.values[0].id
+
+    const siteResponse = await getSiteDetailsById(
+      TEST_KEEPER_DATA_API_URL,
+      siteId
+    )
+    expect(siteResponse.status).to.equal(200)
+    expect(siteResponse.data.parentSiteIdentifier).to.equal(secondaryCPH)
+    expect(siteResponse.data.holdingType).to.equal(cphType)
   })
 })
