@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { describe, it } from 'mocha'
 import { checkHealthEndPoint } from '../helpers/api-call.js'
 import {
   KEEPER_DATA_BRIDGE_URL,

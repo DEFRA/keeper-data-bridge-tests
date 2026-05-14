@@ -318,6 +318,25 @@ export async function getSiteDetailsById(url, siteId) {
   })
   return response
 }
+
+export async function getReferenceCollection(url, resource) {
+  return await axios.get(`${url}/api/reference/${resource}`, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+    }
+  })
+}
+
+export async function getReferenceRecordById(url, resource, id) {
+  return await axios.get(`${url}/api/reference/${resource}/${id}`, {
+    headers: {
+      'x-api-key': API_KEY,
+      Authorization: 'Basic ' + AUTHORIZATION_KEY_API
+    }
+  })
+}
+
 export async function startCtsDailyScanImport(url) {
   const startImportResponse = await axios.post(
     url + CTS_DAILY_SCAN_ENDPOINT,

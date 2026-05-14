@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { describe, it } from 'mocha'
 import { getCountriesList, getCountryDetailsById } from '../helpers/api-call.js'
 import { TEST_KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
