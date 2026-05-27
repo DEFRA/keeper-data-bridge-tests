@@ -263,7 +263,7 @@ describe('sites API Test', function () {
     expect(siteData.permanentLandHoldingIdentifier).to.equal(secondaryCPH)
   })
 
-  it.only('should return permanent land holding identifier data when retrieving a site by id endpoint', async () => {
+  it('should return permanent land holding identifier data when retrieving a site by id endpoint', async () => {
     const siteIdentifier = '37/022/0022'
     const secondaryCPH = '37/022/5022'
 
