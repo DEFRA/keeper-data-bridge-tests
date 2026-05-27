@@ -246,4 +246,44 @@ describe('sites API Test', function () {
     expect(siteResponse.data.parentSiteIdentifier).to.equal(secondaryCPH)
     expect(siteResponse.data.holdingType).to.equal(cphType)
   })
+
+  it('should return permanent land holding identifier where CPH_RELATIONSHIP_TYPE is PCPHLANDUSEDBYTCPH when retrieving sites', async () => {
+    // Target site seeded in DB
+    const siteIdentifier = '37/022/0022'
+    const secondaryCPH = '37/022/5022'
+
+    const siteResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+      SiteIdentifier: siteIdentifier
+    })
+
+    expect(siteResponse.status).to.equal(200)
+    const siteData = siteResponse.data.values[0]
+
+    expect(siteData.parentSiteIdentifier).to.equal(null)
+    expect(siteData.permanentLandHoldingIdentifier).to.equal(secondaryCPH)
+  })
+
+  it.only('should return permanent land holding identifier data when retrieving a site by id endpoint', async () => {
+    const siteIdentifier = '37/022/0022'
+    const secondaryCPH = '37/022/5022'
+
+    const sitesResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+      SiteIdentifier: siteIdentifier
+    })
+
+    expect(sitesResponse.status).to.equal(200)
+    const siteId = sitesResponse.data.values[0].id
+
+    // Request direct item endpoint
+    const siteResponse = await getSiteDetailsById(
+      TEST_KEEPER_DATA_API_URL,
+      siteId
+    )
+
+    expect(siteResponse.status).to.equal(200)
+    expect(siteResponse.data.parentSiteIdentifier).to.equal(null)
+    expect(siteResponse.data.permanentLandHoldingIdentifier).to.equal(
+      secondaryCPH
+    )
+  })
 })

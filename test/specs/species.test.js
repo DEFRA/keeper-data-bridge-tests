@@ -3,8 +3,6 @@ import { getSpeciesList, getSpeciesDetailsById } from '../helpers/api-call.js'
 import { TEST_KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
 describe('Species API Test', function () {
-  this.timeout(60000)
-
   it('should return a list of species', async () => {
     const responseSpeciesList = await getSpeciesList(TEST_KEEPER_DATA_API_URL)
     expect(responseSpeciesList.status).to.equal(200)

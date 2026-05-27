@@ -3,8 +3,6 @@ import { getSiteTypes } from '../helpers/api-call.js'
 import { TEST_KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
 describe('SiteTypes API Test', function () {
-  this.timeout(60000)
-
   it('should return a list of site types with activities', async () => {
     const responseSiteTypes = await getSiteTypes(TEST_KEEPER_DATA_API_URL)
     expect(responseSiteTypes.status).to.equal(200)

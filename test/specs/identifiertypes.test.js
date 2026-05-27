@@ -6,8 +6,6 @@ import {
 import { TEST_KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
 
 describe('Identifier Types API Test', function () {
-  this.timeout(60000)
-
   it('should return a list of identifier types', async () => {
     const response = await getIdentifierTypesList(TEST_KEEPER_DATA_API_URL)
     expect(response.status).to.equal(200)
