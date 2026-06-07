@@ -319,12 +319,13 @@ export async function getSiteDetailsById(url, siteId) {
   return response
 }
 
-export async function getReferenceCollection(url, resource) {
+export async function getReferenceCollection(url, resource, queryParams = {}) {
   return await axios.get(`${url}/api/reference/${resource}`, {
     headers: {
       'x-api-key': API_KEY,
       Authorization: 'Basic ' + AUTHORIZATION_KEY_API
-    }
+    },
+    params: queryParams
   })
 }
 

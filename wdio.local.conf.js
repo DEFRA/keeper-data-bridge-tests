@@ -63,15 +63,17 @@ export const config = {
   //
 
   capabilities: debug
-    ? [{ browserName: 'chrome' }]
+    ? [{ browserName: 'chrome', browserVersion: 'stable' }]
     : [
         {
           maxInstances: 1,
           browserName: 'chrome',
+          browserVersion: 'stable',
           'goog:chromeOptions': {
             args: [
               '--no-sandbox',
               '--disable-infobars',
+              ...(process.env.HEADLESS === 'true' ? ['--headless'] : []),
               '--disable-gpu',
               '--window-size=1920,1080'
             ]
@@ -160,12 +162,16 @@ export const config = {
 
   reporters: [
     'spec',
-    [
-      'allure',
-      {
-        outputDir: 'allure-results'
-      }
-    ]
+    ...(process.env.DISABLE_ALLURE === 'true'
+      ? []
+      : [
+          [
+            'allure',
+            {
+              outputDir: 'allure-results'
+            }
+          ]
+        ])
   ],
 
   // Options to be passed to Mocha.
@@ -313,6 +319,9 @@ export const config = {
    * @param {<Object>} results object containing test results
    */
   onComplete: function (exitCode, config, capabilities, results) {
+    if (process.env.DISABLE_ALLURE === 'true') {
+      return
+    }
     const reportError = new Error('Could not generate Allure report')
     const generation = allure(['generate', 'allure-results', '--clean'])
 
