@@ -30,6 +30,14 @@ const REFERENCE_RESOURCES = [
     persistentName: 'Airport',
     minCount: 15,
     expectedKeys: ['id', 'code', 'name']
+  },
+  {
+    endpoint: 'productionusages',
+    displayName: 'Production Usages',
+    persistentId: 'ba9cb8fb-ab7f-42f2-bc1f-fa4d7fda4824', // Beef
+    persistentName: 'Beef',
+    minCount: 30,
+    expectedKeys: ['id', 'code', 'description', 'lastUpdatedDate']
   }
 ]
 
@@ -72,7 +80,12 @@ describe('Reference Data API Tests', function () {
             expect(item).to.have.all.keys(...expectedKeys)
             expect(item.id).to.be.a('string')
             expect(item.code).to.be.a('string')
-            expect(item.name).to.be.a('string')
+            if (expectedKeys.includes('name')) {
+              expect(item.name).to.be.a('string')
+            }
+            if (expectedKeys.includes('description')) {
+              expect(item.description).to.be.a('string')
+            }
           })
         })
 
@@ -86,7 +99,11 @@ describe('Reference Data API Tests', function () {
 
           expect(response.status).to.equal(200)
           expect(response.data.id).to.equal(persistentId)
-          expect(response.data.name).to.equal(persistentName)
+          if (endpoint === 'productionusages') {
+            expect(response.data.description).to.equal(persistentName)
+          } else {
+            expect(response.data.name).to.equal(persistentName)
+          }
         })
 
         // AC2 & AC6 - Multiple records / No duplicate roles
@@ -139,13 +156,21 @@ describe('Reference Data API Tests', function () {
             // exact ordering, we verify that the newly added 'CL' (Common Land) is returned
             // as the last option in the list.
             expect(codes[codes.length - 1]).to.equal('CL')
-          } else if (endpoint === 'roles' || endpoint === 'activities') {
-            // Ordered alphabetically by name (Name)
-            const names = response.data.values.map((v) => v.name)
-            const sortedNames = [...names].sort((a, b) => a.localeCompare(b))
-            expect(names).to.deep.equal(
-              sortedNames,
-              `API did not return records in alphabetical order by name.`
+          } else if (
+            endpoint === 'roles' ||
+            endpoint === 'activities' ||
+            endpoint === 'productionusages'
+          ) {
+            const values = response.data.values
+            const field =
+              endpoint === 'productionusages' ? 'description' : 'name'
+            const textValues = values.map((v) => v[field])
+            const sortedTextValues = [...textValues].sort((a, b) =>
+              a.localeCompare(b)
+            )
+            expect(textValues).to.deep.equal(
+              sortedTextValues,
+              `API did not return records in alphabetical order by ${field}.`
             )
           } else {
             const codes = response.data.values.map((v) => v.code)
