@@ -22,6 +22,14 @@ const REFERENCE_RESOURCES = [
     persistentName: 'Livestock Keeper',
     minCount: 12,
     expectedKeys: ['id', 'code', 'name', 'lastUpdatedDate']
+  },
+  {
+    endpoint: 'activities',
+    displayName: 'Activities',
+    persistentId: '3ae14c6d-3c40-4496-ba2a-a121831201d3', // Airport
+    persistentName: 'Airport',
+    minCount: 15,
+    expectedKeys: ['id', 'code', 'name']
   }
 ]
 
@@ -131,7 +139,7 @@ describe('Reference Data API Tests', function () {
             // exact ordering, we verify that the newly added 'CL' (Common Land) is returned
             // as the last option in the list.
             expect(codes[codes.length - 1]).to.equal('CL')
-          } else if (endpoint === 'roles') {
+          } else if (endpoint === 'roles' || endpoint === 'activities') {
             // Ordered alphabetically by name (Name)
             const names = response.data.values.map((v) => v.name)
             const sortedNames = [...names].sort((a, b) => a.localeCompare(b))
