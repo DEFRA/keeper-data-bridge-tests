@@ -350,6 +350,8 @@ export async function startCtsDailyScanImport(url) {
       params: { sourceType: 'CtsDailyScan' }
     }
   )
+  // Wait for the asynchronous daily scan import to complete in the API service
+  await new Promise((resolve) => setTimeout(resolve, 55000))
   return startImportResponse
 }
 
@@ -365,6 +367,8 @@ export async function startSamDailyScanImport(url) {
       params: { sourceType: 'SamDailyScan' }
     }
   )
+  // Wait for the asynchronous daily scan import to complete in the API service
+  await new Promise((resolve) => setTimeout(resolve, 55000))
   return startImportResponse
 }
 

@@ -33,6 +33,11 @@ describe('sites API Test', function () {
     ]
     await performE2EFlow(fileNamePattern, collectionName, compositeKeyFields)
 
+    await performE2EFlow('LITP_AMLS2COMMONLAND_{0}.csv', 'amls2_common_land', [
+      'COMMON_CPH',
+      'MAIN_CPH'
+    ])
+
     const response = await startSamDailyScanImport(TEST_KEEPER_DATA_API_URL)
     expect(response.status).to.equal(202)
   })
@@ -285,5 +290,138 @@ describe('sites API Test', function () {
     expect(siteResponse.data.permanentLandHoldingIdentifier).to.equal(
       secondaryCPH
     )
+  })
+
+  describe('Common Land Requirements', () => {
+    it('should return common land details, associatedMainHoldings, and address line 3 when site is a common land site', async () => {
+      const commonLandIdentifier = '00/000/8267'
+
+      // 1. Test via query list endpoint
+      const listResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: commonLandIdentifier
+      })
+      expect(listResponse.status).to.equal(200)
+      expect(listResponse.data.values).to.be.an('array')
+      expect(listResponse.data.values.length).to.be.greaterThan(0)
+
+      const siteData = listResponse.data.values[0]
+      expect(siteData.type.code).to.equal('CL')
+      expect(siteData.type.name).to.equal('Common Land')
+      expect(siteData.associatedCommonLands).to.be.an('array').of.length(0)
+
+      // Check associatedMainHoldings
+      expect(siteData.associatedMainHoldings).to.be.an('array').of.length(2)
+
+      const holding1 = siteData.associatedMainHoldings.find(
+        (h) => h.holdingIdentifier === '17/050/0003'
+      )
+      expect(holding1).to.be.an('object')
+      expect(holding1.contiguousFlag).to.equal(true)
+      expect(holding1.startDate).to.equal('18/11/2010 00:00')
+      expect(holding1.endDate).to.equal('31/12/2999 00:00')
+
+      const holding2 = siteData.associatedMainHoldings.find(
+        (h) => h.holdingIdentifier === '17/050/0004'
+      )
+      expect(holding2).to.be.an('object')
+      expect(holding2.contiguousFlag).to.equal(false)
+      expect(holding2.startDate).to.equal('22/05/2026 00:00')
+      expect(holding2.endDate).to.equal('31/12/2999 00:00')
+
+      // Check address fields (including new addressLine3)
+      expect(siteData.location.address).to.be.an('object')
+      if (siteData.location.address.addressLine3 !== undefined) {
+        expect(siteData.location.address.addressLine3).to.be.a('string')
+        expect(siteData.location.address.addressLine3).to.equal('Locality22')
+      }
+
+      // 2. Test via direct get site by id endpoint
+      const detailResponse = await getSiteDetailsById(
+        TEST_KEEPER_DATA_API_URL,
+        siteData.id
+      )
+      expect(detailResponse.status).to.equal(200)
+
+      const details = detailResponse.data
+      expect(details.type.code).to.equal('CL')
+      expect(details.type.name).to.equal('Common Land')
+      expect(details.associatedCommonLands).to.be.an('array').of.length(0)
+      expect(details.associatedMainHoldings).to.be.an('array').of.length(2)
+
+      const dHolding1 = details.associatedMainHoldings.find(
+        (h) => h.holdingIdentifier === '17/050/0003'
+      )
+      expect(dHolding1).to.be.an('object')
+      expect(dHolding1.contiguousFlag).to.equal(true)
+
+      const dHolding2 = details.associatedMainHoldings.find(
+        (h) => h.holdingIdentifier === '17/050/0004'
+      )
+      expect(dHolding2).to.be.an('object')
+      expect(dHolding2.contiguousFlag).to.equal(false)
+
+      if (details.location.address.addressLine3 !== undefined) {
+        expect(details.location.address.addressLine3).to.equal('Locality22')
+      }
+    })
+
+    it('should return associatedCommonLands and empty associatedMainHoldings when site is a standard (non-common land) site', async () => {
+      const standardIdentifier = '08/001/0015'
+
+      // 1. Test via query list endpoint
+      const listResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: standardIdentifier
+      })
+      expect(listResponse.status).to.equal(200)
+      expect(listResponse.data.values).to.be.an('array')
+      expect(listResponse.data.values.length).to.be.greaterThan(0)
+
+      const siteData = listResponse.data.values[0]
+      expect(siteData.type?.code || '').to.not.equal('CL')
+      expect(siteData.associatedMainHoldings).to.be.an('array').of.length(0)
+
+      // Check associatedCommonLands
+      expect(siteData.associatedCommonLands).to.be.an('array').of.length(2)
+
+      const common1 = siteData.associatedCommonLands.find(
+        (c) => c.holdingIdentifier === '00/000/5136'
+      )
+      expect(common1).to.be.an('object')
+      expect(common1.contiguousFlag).to.equal(true)
+      expect(common1.startDate).to.include('2012-02-11')
+      expect(common1.endDate).to.equal('31/12/2999 00:00')
+
+      const common2 = siteData.associatedCommonLands.find(
+        (c) => c.holdingIdentifier === '00/000/5137'
+      )
+      expect(common2).to.be.an('object')
+      expect(common2.contiguousFlag).to.equal(false)
+      expect(common2.startDate).to.equal('22/05/2026 00:00')
+      expect(common2.endDate).to.equal('31/12/2999 00:00')
+
+      // 2. Test via direct get site by id endpoint
+      const detailResponse = await getSiteDetailsById(
+        TEST_KEEPER_DATA_API_URL,
+        siteData.id
+      )
+      expect(detailResponse.status).to.equal(200)
+
+      const details = detailResponse.data
+      expect(details.type?.code || '').to.not.equal('CL')
+      expect(details.associatedMainHoldings).to.be.an('array').of.length(0)
+      expect(details.associatedCommonLands).to.be.an('array').of.length(2)
+
+      const dCommon1 = details.associatedCommonLands.find(
+        (c) => c.holdingIdentifier === '00/000/5136'
+      )
+      expect(dCommon1).to.be.an('object')
+      expect(dCommon1.contiguousFlag).to.equal(true)
+
+      const dCommon2 = details.associatedCommonLands.find(
+        (c) => c.holdingIdentifier === '00/000/5137'
+      )
+      expect(dCommon2).to.be.an('object')
+      expect(dCommon2.contiguousFlag).to.equal(false)
+    })
   })
 })
