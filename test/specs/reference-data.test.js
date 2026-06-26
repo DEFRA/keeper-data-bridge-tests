@@ -29,7 +29,7 @@ const REFERENCE_RESOURCES = [
     persistentId: '3ae14c6d-3c40-4496-ba2a-a121831201d3', // Airport
     persistentName: 'Airport',
     minCount: 15,
-    expectedKeys: ['id', 'code', 'name']
+    expectedKeys: ['id', 'code', 'name', 'lastUpdatedDate']
   },
   {
     endpoint: 'productionusages',
