@@ -4,6 +4,9 @@ const debug = process.env.DEBUG
 const oneMinute = 60 * 1000
 const oneHour = 60 * 60 * 1000
 
+const headless = process.env.HEADLESS !== 'false'
+const disableAllure = process.env.DISABLE_ALLURE !== 'false'
+
 const execArgv = ['--loader', 'esm-module-alias/loader']
 
 if (debug) {
@@ -73,7 +76,7 @@ export const config = {
             args: [
               '--no-sandbox',
               '--disable-infobars',
-              ...(process.env.HEADLESS === 'true' ? ['--headless'] : []),
+              ...(headless ? ['--headless'] : []),
               '--disable-gpu',
               '--window-size=1920,1080'
             ]
@@ -162,7 +165,7 @@ export const config = {
 
   reporters: [
     'spec',
-    ...(process.env.DISABLE_ALLURE === 'true'
+    ...(disableAllure
       ? []
       : [
           [
@@ -319,7 +322,7 @@ export const config = {
    * @param {<Object>} results object containing test results
    */
   onComplete: function (exitCode, config, capabilities, results) {
-    if (process.env.DISABLE_ALLURE === 'true') {
+    if (disableAllure) {
       return
     }
     const reportError = new Error('Could not generate Allure report')

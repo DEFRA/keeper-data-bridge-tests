@@ -305,6 +305,7 @@ describe('sites API Test', function () {
       expect(listResponse.data.values.length).to.be.greaterThan(0)
 
       const siteData = listResponse.data.values[0]
+      expect(siteData.name).to.equal('Premises 22')
       expect(siteData.type.code).to.equal('CL')
       expect(siteData.type.name).to.equal('Common Land')
       expect(siteData.associatedCommonLands).to.be.an('array').of.length(0)
@@ -328,12 +329,10 @@ describe('sites API Test', function () {
       expect(holding2.startDate).to.equal('22/05/2026 00:00')
       expect(holding2.endDate).to.equal('31/12/2999 00:00')
 
-      // Check address fields (including new addressLine3)
+      // Check address fields (including mapping to postTown)
       expect(siteData.location.address).to.be.an('object')
-      if (siteData.location.address.addressLine3 !== undefined) {
-        expect(siteData.location.address.addressLine3).to.be.a('string')
-        expect(siteData.location.address.addressLine3).to.equal('Locality22')
-      }
+      expect(siteData.location.address.postTown).to.be.a('string')
+      expect(siteData.location.address.postTown).to.equal('Locality22')
 
       // 2. Test via direct get site by id endpoint
       const detailResponse = await getSiteDetailsById(
@@ -343,6 +342,7 @@ describe('sites API Test', function () {
       expect(detailResponse.status).to.equal(200)
 
       const details = detailResponse.data
+      expect(details.name).to.equal('Premises 22')
       expect(details.type.code).to.equal('CL')
       expect(details.type.name).to.equal('Common Land')
       expect(details.associatedCommonLands).to.be.an('array').of.length(0)
@@ -360,9 +360,7 @@ describe('sites API Test', function () {
       expect(dHolding2).to.be.an('object')
       expect(dHolding2.contiguousFlag).to.equal(false)
 
-      if (details.location.address.addressLine3 !== undefined) {
-        expect(details.location.address.addressLine3).to.equal('Locality22')
-      }
+      expect(details.location.address.postTown).to.equal('Locality22')
     })
 
     it('should return associatedCommonLands and empty associatedMainHoldings when site is a standard (non-common land) site', async () => {
@@ -399,6 +397,16 @@ describe('sites API Test', function () {
       expect(common2.startDate).to.equal('22/05/2026 00:00')
       expect(common2.endDate).to.equal('31/12/2999 00:00')
 
+      // Check address fields (verify they have not been overwritten by common land data)
+      expect(siteData.location.address).to.be.an('object')
+      expect(siteData.location.address.addressLine1).to.equal('1A-10B, 2C-20D')
+      expect(siteData.location.address.addressLine2).to.equal(
+        'Holding Street 27'
+      )
+      expect(siteData.location.address.postTown).to.equal('Town27')
+      expect(siteData.location.address.county).to.equal('Locality27')
+      expect(siteData.location.address.postcode).to.equal('CPH27 227')
+
       // 2. Test via direct get site by id endpoint
       const detailResponse = await getSiteDetailsById(
         TEST_KEEPER_DATA_API_URL,
@@ -422,6 +430,16 @@ describe('sites API Test', function () {
       )
       expect(dCommon2).to.be.an('object')
       expect(dCommon2.contiguousFlag).to.equal(false)
+
+      // Check address fields (verify they have not been overwritten by common land data)
+      expect(details.location.address).to.be.an('object')
+      expect(details.location.address.addressLine1).to.equal('1A-10B, 2C-20D')
+      expect(details.location.address.addressLine2).to.equal(
+        'Holding Street 27'
+      )
+      expect(details.location.address.postTown).to.equal('Town27')
+      expect(details.location.address.county).to.equal('Locality27')
+      expect(details.location.address.postcode).to.equal('CPH27 227')
     })
   })
 })
