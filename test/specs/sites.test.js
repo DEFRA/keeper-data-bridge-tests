@@ -2,13 +2,18 @@ import { expect } from 'chai'
 import {
   startSamDailyScanImport,
   getSitesList,
-  getSiteDetailsById
+  getSiteDetailsById,
+  uploadEncryptedFile,
+  startImport,
+  waitForImportCompletion,
+  cleanCollection,
+  cleanInternalStorageFiles
 } from '../helpers/api-call.js'
+import { setFileProcessor } from '../helpers/e2e-etl-dev-flow.js'
 import {
-  performE2EFlow,
-  setFileProcessor
-} from '../helpers/e2e-etl-dev-flow.js'
-import { TEST_KEEPER_DATA_API_URL } from '../helpers/api-endpoints.js'
+  TEST_KEEPER_DATA_API_URL,
+  TEST_KEEPER_DATA_BRIDGE_URL
+} from '../helpers/api-endpoints.js'
 import FileProcessor from '../helpers/file-processor.js'
 
 describe('sites API Test', function () {
@@ -23,23 +28,109 @@ describe('sites API Test', function () {
     await processor.processAllFiles()
     setFileProcessor(processor)
 
-    const fileNamePattern = 'LITP_SAMCPHHOLDING_{0}.csv'
-    const collectionName = 'sam_cph_holdings'
-    const compositeKeyFields = [
-      'CPH',
-      'FEATURE_NAME',
-      'SECONDARY_CPH',
-      'ANIMAL_SPECIES_CODE'
-    ]
-    await performE2EFlow(fileNamePattern, collectionName, compositeKeyFields)
+    // 1. Clean collections
+    await cleanCollection(TEST_KEEPER_DATA_BRIDGE_URL, 'sam_cph_holdings')
+    await cleanCollection(TEST_KEEPER_DATA_BRIDGE_URL, 'amls2_common_land')
 
-    await performE2EFlow('LITP_AMLS2COMMONLAND_{0}.csv', 'amls2_common_land', [
-      'COMMON_CPH',
-      'MAIN_CPH'
-    ])
+    // 2. Clean storage files once at the beginning
+    await cleanInternalStorageFiles(TEST_KEEPER_DATA_BRIDGE_URL, {
+      sourceType: 'internal'
+    })
+    await cleanInternalStorageFiles(TEST_KEEPER_DATA_BRIDGE_URL, {
+      sourceType: 'external'
+    })
 
+    // 3. Find files
+    const samFileName = Array.from(processor.processedFiles.keys()).find((f) =>
+      f.includes('SAMCPHHOLDING')
+    )
+    const commonFileName = Array.from(processor.processedFiles.keys()).find(
+      (f) => f.includes('AMLS2COMMONLAND')
+    )
+    const portFileName = Array.from(processor.processedFiles.keys()).find((f) =>
+      f.includes('AMLS2PORT')
+    )
+
+    // 4. Import SAMCPHHOLDING sequentially
+    if (samFileName) {
+      await uploadEncryptedFile(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        samFileName,
+        processor.getEncryptedFile(samFileName)
+      )
+      const importRes = await startImport(TEST_KEEPER_DATA_BRIDGE_URL)
+      expect(importRes.status).to.be.oneOf([200, 202])
+      await waitForImportCompletion(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        importRes.data.importId
+      )
+    }
+
+    // 5. Import AMLS2COMMONLAND sequentially
+    if (commonFileName) {
+      await uploadEncryptedFile(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        commonFileName,
+        processor.getEncryptedFile(commonFileName)
+      )
+      const importRes = await startImport(TEST_KEEPER_DATA_BRIDGE_URL)
+      expect(importRes.status).to.be.oneOf([200, 202])
+      await waitForImportCompletion(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        importRes.data.importId
+      )
+    }
+
+    // 6. Import AMLS2PORT sequentially
+    if (portFileName) {
+      await uploadEncryptedFile(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        portFileName,
+        processor.getEncryptedFile(portFileName)
+      )
+      const importRes = await startImport(TEST_KEEPER_DATA_BRIDGE_URL)
+      expect(importRes.status).to.be.oneOf([200, 202])
+      await waitForImportCompletion(
+        TEST_KEEPER_DATA_BRIDGE_URL,
+        importRes.data.importId
+      )
+    }
+
+    // 7. Trigger Daily Scan
     const response = await startSamDailyScanImport(TEST_KEEPER_DATA_API_URL)
     expect(response.status).to.equal(202)
+
+    // Poll to ensure both common land data, standard site mappings, and port data are fully synced in the read-side API database
+    const startTime = Date.now()
+    const timeout = 60000
+    let isSynced = false
+    while (Date.now() - startTime < timeout) {
+      const standardRes = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: '08/001/0015'
+      })
+      const commonRes = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: '00/000/8267'
+      })
+      const portRes = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: 'ABRDD'
+      })
+      const standardSite = standardRes.data?.values?.[0]
+      const commonSite = commonRes.data?.values?.[0]
+      const portSite = portRes.data?.values?.[0]
+      if (
+        standardSite?.associatedCommonLands?.length === 2 &&
+        commonSite?.associatedMainHoldings?.length === 2 &&
+        portSite?.name === 'Aberdeen Docks'
+      ) {
+        isSynced = true
+        break
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    }
+    expect(
+      isSynced,
+      'Database sync timed out: expected records were not fully imported'
+    ).to.equal(true)
   })
 
   it('should return a list of sites', async () => {
@@ -440,6 +531,46 @@ describe('sites API Test', function () {
       expect(details.location.address.postTown).to.equal('Town27')
       expect(details.location.address.county).to.equal('Locality27')
       expect(details.location.address.postcode).to.equal('CPH27 227')
+    })
+  })
+
+  describe('Port Requirements', () => {
+    it('AC1 – Retrieve port data given a CPH: should return HTTP 200 with port details if a port exists for the specified CPH', async () => {
+      const cphWithPort = 'ABRDD'
+
+      // 1. Test via query list endpoint
+      const listResponse = await getSitesList(TEST_KEEPER_DATA_API_URL, {
+        SiteIdentifier: cphWithPort
+      })
+      expect(listResponse.status).to.equal(200)
+      expect(listResponse.data.values).to.be.an('array')
+      expect(listResponse.data.values.length).to.be.greaterThan(0)
+
+      const siteData = listResponse.data.values[0]
+      expect(siteData.name).to.equal('Aberdeen Docks')
+      expect(siteData.identifiers).to.be.an('array')
+      expect(siteData.identifiers[0].identifier).to.equal(cphWithPort)
+
+      // 2. Query GET /api/sites/{id} endpoint
+      const detailResponse = await getSiteDetailsById(
+        TEST_KEEPER_DATA_API_URL,
+        siteData.id
+      )
+      expect(detailResponse.status).to.equal(200)
+
+      const details = detailResponse.data
+      expect(details.name).to.equal('Aberdeen Docks')
+      expect(details.location).to.be.an('object')
+      expect(details.location.osMapReference).to.equal('NJ944061')
+      expect(details.location.address).to.be.an('object')
+      expect(details.location.address.addressLine1).to.equal('Aberdeen Docks')
+      expect(details.location.address.addressLine2).to.equal(
+        '16 Regent Quay Aberdeen AB11 5SS'
+      )
+      expect(details.location.address.county).to.equal('Harbour Office')
+      expect(details.location.address.postcode).to.equal('AB11 5SS')
+      expect(details.location.easting).to.equal(394400)
+      expect(details.location.northing).to.equal(806100)
     })
   })
 })
