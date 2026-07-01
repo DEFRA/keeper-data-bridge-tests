@@ -537,7 +537,7 @@ describe('sites API Test', function () {
   })
 
   describe('Port Requirements', () => {
-    it.only('Fetch Port Site by its CPH', async () => {
+    it('Fetch Port Site by its CPH', async () => {
       const cphWithPort = 'ABRDD'
 
       // 1. Test via query list endpoint
